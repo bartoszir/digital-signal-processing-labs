@@ -1,0 +1,27 @@
+package dsp.task1.logic;
+
+/**
+ * Klasa reprezentująca pojedynczą próbkę sygnału, zawierająca czas i wartość sygnału w tym czasie.
+ */
+public class Sample {
+    private final double time;
+    private final double value;
+
+    public Sample(double time, double value) {
+        this.time = time;
+        this.value = value;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return "t=" + time + ", x=" + value;
+    }
+}
