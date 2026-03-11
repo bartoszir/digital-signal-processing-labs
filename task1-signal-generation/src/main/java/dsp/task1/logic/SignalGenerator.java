@@ -1,5 +1,8 @@
 package dsp.task1.logic;
 
+import dsp.task1.logic.signal.Signal;
+import dsp.task1.logic.signal.ContinuousSignal;
+import dsp.task1.logic.signal.DiscreteSignal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +13,27 @@ import java.util.List;
  */
 public class SignalGenerator {
 
-    public List<Sample> generate(Signal signal, double startTime, double duration, double samplingFrequency) {
+    public List<Sample> generate(Signal signal, double samplingFrequency) {
         List<Sample> samples = new ArrayList<>();
 
-        double endTime = startTime + duration;
+        double startTime = signal.getStartTime();
+        double duration = signal.getDuration();
         double dt = 1.0 / samplingFrequency;
 
-        for (double t = startTime; t <= endTime; t += dt) {
-            double value = signal.valueAt(t);
-            samples.add(new Sample(t, value));
+        int sampleCount = (int) Math.floor(duration * samplingFrequency);
+
+        if (signal instanceof ContinuousSignal continuousSignal) {
+            for (int n = 0; n <= sampleCount; n++) {
+                double t = startTime + n * dt;
+                double value = continuousSignal.getValueAt(t);
+                samples.add(new Sample(t, value));
+            }
+        } else if (signal instanceof DiscreteSignal discreteSignal) {
+            for (int n = 0; n <= sampleCount; n++) {
+                double t = startTime + n * dt;
+                double value = discreteSignal.getValueAtSample(n);
+                samples.add(new Sample(t, value));
+            }
         }
 
         return samples;

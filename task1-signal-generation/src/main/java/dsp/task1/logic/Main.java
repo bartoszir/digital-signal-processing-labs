@@ -1,40 +1,30 @@
 package dsp.task1.logic;
 
+import dsp.task1.logic.signal.*;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        double A, T, t1, duration, samplingFrequency;
+        double A, T, t1, d, samplingFrequency;
         int signal_type;
 
         // ----- parametry -----
         A = 1;
         T = 1;
         t1 = 0;
-        duration = 2;
-        samplingFrequency = 100;
+        d = 2;
+        samplingFrequency = 300;
         // typ sygnalu: 1-sinusoida 2-szum jednostajny
-        signal_type = 2;
+        signal_type = 1;
         // --------------------
 
-        Signal signal;
+        Signal signal = new HalfWaveRectifiedSinusoidalSignal(A, t1, d, T);
+        SignalGenerator generator = new SignalGenerator();
+        List<Sample> samples = generator.generate(signal, samplingFrequency);
 
-        if (signal_type == 1) {
-            signal = new SinusoidalSignal(A, T, t1);
-            SignalGenerator generator = new SignalGenerator();
-            List<Sample> samples = generator.generate(signal, t1, duration, samplingFrequency);
-
-            SignalPlotter.plot(samples);
-        } else if (signal_type == 2) {
-            signal = new UniformNoiseSignal(A);
-            SignalGenerator generator = new SignalGenerator();
-            List<Sample> samples = generator.generate(signal, t1, duration, samplingFrequency);
-
-            SignalPlotter.plot(samples);
-        } else {
-            System.out.println("bledny wybor");
-        }
+        SignalPlotter.plot(signal, samples);
     }
 }
