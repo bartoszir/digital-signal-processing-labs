@@ -19,7 +19,7 @@ public class SignalPlotter {
         }
 
         XYChart chart = new XYChartBuilder()
-                .width(800)
+                .width(1000)
                 .height(600)
                 .title("Signal")
                 .xAxisTitle("Time")

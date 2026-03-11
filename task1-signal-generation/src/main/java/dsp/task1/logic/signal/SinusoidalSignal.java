@@ -8,6 +8,10 @@ public class SinusoidalSignal extends PeriodicSignal {
 
     @Override
     public double getValueAt(double t) {
+        if (!isActiveAt(t)) {
+            return 0.0;
+        }
+
         return A * Math.sin((2 * Math.PI / T) * (t - t1));
     }
 }
