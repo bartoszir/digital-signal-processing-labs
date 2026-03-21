@@ -49,7 +49,7 @@ public class SignalStatistics {
 
         for (Sample sample : samples) {
             double diff = sample.getValue() - mean;
-            sum += Math.pow(diff, diff);
+            sum += diff * diff;
         }
         return sum / samples.size();
     }

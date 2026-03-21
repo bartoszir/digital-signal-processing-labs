@@ -1,10 +1,10 @@
 package dsp.task1.logic.signal;
 
-public class UnitStepSignal extends ContinuousSignal {
+public class UnitJumpSignal extends ContinuousSignal {
 
     private final double ts;
 
-    public UnitStepSignal(double amplitude, double startTime, double duration, double stepTime) {
+    public UnitJumpSignal(double amplitude, double startTime, double duration, double stepTime) {
         super(amplitude, startTime, duration);
         this.ts = stepTime;
     }

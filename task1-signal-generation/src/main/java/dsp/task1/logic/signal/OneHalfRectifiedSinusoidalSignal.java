@@ -1,8 +1,8 @@
 package dsp.task1.logic.signal;
 
-public class HalfWaveRectifiedSinusoidalSignal extends PeriodicSignal {
+public class OneHalfRectifiedSinusoidalSignal extends PeriodicSignal {
 
-    public HalfWaveRectifiedSinusoidalSignal(double amplitude, double startTime, double duration, double period) {
+    public OneHalfRectifiedSinusoidalSignal(double amplitude, double startTime, double duration, double period) {
         super(amplitude, startTime, duration, period);
     }
 

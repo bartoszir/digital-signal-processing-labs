@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SignalGenerator {
 
-    public List<Sample> generate(Signal signal, double samplingFrequency) {
+    public static List<Sample> generate(Signal signal, double samplingFrequency) {
         List<Sample> samples = new ArrayList<>();
 
         double startTime = signal.getStartTime();
