@@ -19,11 +19,11 @@ public class Main {
         BinarySampleFileService binaryService = new BinarySampleFileService();
 
         try {
-            textService.save("demoFiles/signal.txt", samples);
-            binaryService.save("demoFiles/signal.bin", samples);
+            textService.save("signal.txt", samples);
+            binaryService.save("signal.bin", samples);
 
-            List<Sample> loadedTextSamples = textService.load("demoFiles/signal.txt");
-            List<Sample> loadedBinarySamples = binaryService.load("demoFiles/signal.bin");
+            List<Sample> loadedTextSamples = textService.load("signal.txt");
+            List<Sample> loadedBinarySamples = binaryService.load("signal.bin");
 
             System.out.println("Odczyt z pliku tekstowego:");
             for (Sample sample : loadedTextSamples) {
