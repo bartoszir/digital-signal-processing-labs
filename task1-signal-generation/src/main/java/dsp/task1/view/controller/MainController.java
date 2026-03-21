@@ -1,20 +1,13 @@
 package dsp.task1.view.controller;
 
-import dsp.task1.logic.Sample;
-import dsp.task1.logic.SignalManager;
-import dsp.task1.logic.SignalParameters;
-import dsp.task1.logic.SignalStatistics;
+import dsp.task1.logic.*;
 import dsp.task1.logic.signal.SignalType;
 import dsp.task1.view.utils.Helper;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.chart.*;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import java.net.URL;
@@ -55,6 +48,12 @@ public class MainController implements Initializable{
     @FXML private Label varianceValueLabel;
     @FXML private Label averagePowerValueLabel;
 
+    /*------------------- Histogram Tab -------------------*/
+    @FXML private BarChart<String, Number> histogramChart;
+    @FXML private CategoryAxis histogramXAxis;
+    @FXML private NumberAxis histogramYAxis;
+    @FXML private Spinner<Integer> histogramBinsSpinner;
+
     /*------------------- Signal Chart -------------------*/
     // wykres sygnału
     @FXML private LineChart<Number, Number> lineSignalChart;
@@ -75,6 +74,14 @@ public class MainController implements Initializable{
     public void initialize(URL url, ResourceBundle resourceBundle) {
         signalTypeComboBox.getItems().setAll(SignalType.values());
         signalTypeComboBox.setOnAction(actionEvent -> updateSpecificParamsVisibility());
+
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 20, 10, 5);
+        valueFactory.setValue(10);
+        histogramBinsSpinner.setValueFactory(valueFactory);
+        histogramChart.setAnimated(false);
+        histogramChart.setLegendVisible(false);
+        histogramXAxis.setLabel("Przedziały wartości");
+        histogramYAxis.setLabel("Liczba próbek");
 
         setDefaultValues();
 
@@ -106,6 +113,7 @@ public class MainController implements Initializable{
             }
 
             updateStatistics(samples);
+            drawHistogram(samples);
         } catch (NumberFormatException e) {
             System.out.println("Niepoprawny format liczby.");
         }
@@ -283,5 +291,24 @@ public class MainController implements Initializable{
 
     private String format(double value) {
         return String.format("%.4f", value);
+    }
+
+    private void drawHistogram(List<Sample> samples) {
+        Integer binsCount = histogramBinsSpinner.getValue();
+        if (binsCount == null) {
+            binsCount = 10;
+        }
+
+        List<HistogramBin> bins = SignalHistogram.generate(samples, binsCount);
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Histogram");
+
+        for (HistogramBin bin : bins) {
+            series.getData().add(new XYChart.Data<>(bin.getLabel(), bin.getCount()));
+        }
+
+        histogramChart.getData().clear();
+        histogramChart.getData().add(series);
     }
 }
