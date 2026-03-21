@@ -22,6 +22,6 @@ public class Sample {
 
     @Override
     public String toString() {
-        return "t=" + time + ", x=" + value;
+        return String.format("t=%.4f, y=%.4f", time, value);
     }
 }
