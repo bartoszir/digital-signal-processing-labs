@@ -2,6 +2,8 @@ package dsp.task1.logic;
 
 import dsp.task1.logic.io.BinarySampleFileService;
 import dsp.task1.logic.io.TextSampleFileService;
+import dsp.task1.logic.signal.SinusoidalSignal;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,34 +11,16 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        // test IO
-        List<Sample> samples = new ArrayList<>();
-        samples.add(new Sample(0.0, 1.0));
-        samples.add(new Sample(0.1, 1.5));
-        samples.add(new Sample(0.2, 2.0));
+        SignalGenerator generator = new SignalGenerator();
 
-        TextSampleFileService textService = new TextSampleFileService();
-        BinarySampleFileService binaryService = new BinarySampleFileService();
+        List<Sample> samples = generator.generate(new SinusoidalSignal(2.0, 0, 10, 2), 10);
 
-        try {
-            textService.save("signal.txt", samples);
-            binaryService.save("signal.bin", samples);
+        double mean = SignalStatistics.mean(samples);
+        double rms = SignalStatistics.rms(samples);
+        double variance = SignalStatistics.variance(samples);
 
-            List<Sample> loadedTextSamples = textService.load("signal.txt");
-            List<Sample> loadedBinarySamples = binaryService.load("signal.bin");
-
-            System.out.println("Odczyt z pliku tekstowego:");
-            for (Sample sample : loadedTextSamples) {
-                System.out.println(sample);
-            }
-
-            System.out.println("\nOdczyt z pliku binarnego:");
-            for (Sample sample : loadedBinarySamples) {
-                System.out.println(sample);
-            }
-
-        } catch (IOException e) {
-            System.out.println("Błąd podczas operacji na pliku: " + e.getMessage());
-        }
+        System.out.println("Średnia: " + mean);
+        System.out.println("RMS: " + rms);
+        System.out.println("Wariancja: " + variance);
     }
 }
