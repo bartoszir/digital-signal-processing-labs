@@ -62,6 +62,7 @@
 
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dsp.task1.view.controller.MainController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
@@ -262,27 +263,38 @@
 
                                     <Separator/>
 
-                                    <Label text="Zapis" style="-fx-font-weight: bold;" />
-                                    <VBox spacing="8">
-                                        <Button text="Zapisz binarnie" onAction="#onSaveBinaryClicked"/>
-                                        <Button text="Zapisz tekstowo" onAction="#onSaveTextClicked"/>
-                                    </VBox>
-
-                                    <Separator/>
-
-                                    <Label text="Odczyt" style="-fx-font-weight: bold;" />
-                                    <VBox spacing="8">
-                                        <Button text="Wczytaj binarnie" onAction="#onLoadBinaryClicked"/>
-                                        <Button text="Wczytaj tekstowo" onAction="#onLoadTextClicked"/>
-                                    </VBox>
+                                    <Label text="Zapis/Odczyt" style="-fx-font-weight: bold;" />
+                                    <GridPane hgap="10" vgap="8">
+                                        <Button text="Zapisz binarnie" onAction="#onSaveBinaryClicked" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <Button text="Wczytaj binarnie" onAction="#onLoadBinaryClicked" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                    </GridPane>
 
                                     <Separator/>
 
                                     <Label text="Wczytane sygnały" style="-fx-font-weight: bold;" />
                                     <ListView fx:id="loadedSignalsListView" prefHeight="150.0" />
-                                    <Button fx:id="showLoadedSignalButton"
-                                            text="Pokaż zaznaczony sygnał"
-                                            onAction="#onShowLoadedSignalClicked"/>
+                                    <GridPane hgap="10" vgap="8">
+                                        <Button fx:id="showLoadedSignalButton"
+                                                text="Pokaż zaznaczony sygnał"
+                                                onAction="#onShowLoadedSignalClicked"
+                                                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+                                        <Button fx:id="deleteLoadedSignalButton"
+                                                text="Usuń zaznaczony sygnał"
+                                                onAction="#onDeleteLoadedSignalClicked"
+                                                GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                    </GridPane>
+
+                                    <Separator/>
+
+                                    <Label text="Podgląd danych sygnału" style="-fx-font-weight: bold;" />
+
+                                    <TextArea fx:id="fileContentTextArea"
+                                              editable="false"
+                                              wrapText="false"
+                                              prefHeight="200.0"
+                                              VBox.vgrow="ALWAYS" />
+
 
                                 </children>
                             </VBox>
@@ -296,7 +308,28 @@
                                       <Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/>
                                   </padding>
                                   <children>
+                                      <Label text="Operacje na sygnałach" style="-fx-font-weight: bold;" />
 
+                                      <GridPane hgap="10" vgap="8">
+                                          <Label text="Sygnał 1:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                          <ComboBox fx:id="operationSignal1ComboBox" prefWidth="220.0"
+                                                    GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                          <Label text="Sygnał 2:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                          <ComboBox fx:id="operationSignal2ComboBox" prefWidth="220.0"
+                                                    GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                          <Label text="Operacja:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                          <ComboBox fx:id="signalOperationTypeComboBox" prefWidth="220.0"
+                                                    GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                          <Label text="Nazwa wyniku:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                          <TextField fx:id="operationResultNameField" prefWidth="220.0"
+                                                     GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                      </GridPane>
+
+                                      <Button fx:id="performOperationButton" text="Wykonaj operację"
+                                              onAction="#onPerformSignalOperationClicked"/>
                                   </children>
                               </VBox>
                           </content>

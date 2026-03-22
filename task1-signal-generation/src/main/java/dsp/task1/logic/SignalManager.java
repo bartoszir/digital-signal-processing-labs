@@ -1,11 +1,9 @@
 package dsp.task1.logic;
 
 import dsp.task1.logic.io.BinarySignalFileService;
-import dsp.task1.logic.io.TextSignalFileService;
 import dsp.task1.logic.signal.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +11,15 @@ import java.util.Map;
 public class SignalManager {
     private final Map<String, SignalData> loadedSignals = new LinkedHashMap<>();
     private final BinarySignalFileService binaryFileService = new BinarySignalFileService();
-    private final TextSignalFileService textFileService = new TextSignalFileService();
 
     public void addLoadedSignal(SignalData signalData) {
         String uniqueName = getUniqueSignalName(signalData.getName());
         signalData.setName(uniqueName);
         loadedSignals.put(uniqueName, signalData);
+    }
+
+    public void removeLoadedSignal(String name) {
+        loadedSignals.remove(name);
     }
 
     public Map<String, SignalData> getLoadedSignals() {
@@ -35,16 +36,6 @@ public class SignalManager {
 
     public SignalData loadSignalBinary(String fileName) throws IOException {
         SignalData signalData = binaryFileService.load(fileName);
-        addLoadedSignal(signalData);
-        return signalData;
-    }
-
-    public void saveSignalText(String fileName, SignalData signalData) throws IOException {
-        textFileService.save(fileName, signalData);
-    }
-
-    public SignalData loadSignalText(String fileName) throws IOException {
-        SignalData signalData = textFileService.load(fileName);
         addLoadedSignal(signalData);
         return signalData;
     }

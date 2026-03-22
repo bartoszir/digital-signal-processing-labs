@@ -1,6 +1,8 @@
 package dsp.task1.view.controller;
 
 import dsp.task1.logic.*;
+import dsp.task1.logic.operations.SampleOperations;
+import dsp.task1.logic.operations.SignalOperationType;
 import dsp.task1.logic.signal.SignalType;
 
 import dsp.task1.view.utils.Helper;
@@ -14,6 +16,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -71,6 +74,14 @@ public class MainController implements Initializable{
     @FXML private TextField signalNameInputField;
     @FXML private javafx.scene.control.ListView<String> loadedSignalsListView;
     @FXML private Button showLoadedSignalButton;
+    @FXML private TextArea fileContentTextArea;
+
+    /*------------------- Operacje na sygnałach -------------------*/
+    @FXML private ComboBox<String> operationSignal1ComboBox;
+    @FXML private ComboBox<String> operationSignal2ComboBox;
+    @FXML private ComboBox<SignalOperationType> signalOperationTypeComboBox;
+    @FXML private TextField operationResultNameField;
+    @FXML private Button performOperationButton;
 
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
@@ -96,6 +107,8 @@ public class MainController implements Initializable{
 
         setDefaultValues();
         refreshLoadedSignalsList();
+
+        signalOperationTypeComboBox.getItems().setAll(SignalOperationType.values());
 
         lineSignalChart.setAnimated(false);
         lineSignalChart.setCreateSymbols(false); // czy pokazywac punkty probek
@@ -126,9 +139,7 @@ public class MainController implements Initializable{
                     samples
             );
 
-            if (signalNameInputField.getText().trim().isEmpty()) {
-                signalNameInputField.setText(selectedType.name().toLowerCase());
-            }
+            signalNameInputField.setText(selectedType.name().toLowerCase());
 
             if (isDiscreteSignal(selectedType)) {
                 drawScatterSamples(samples, selectedType.getName());
@@ -203,66 +214,6 @@ public class MainController implements Initializable{
     }
 
     @FXML
-    private void onSaveTextClicked() {
-        if (currentSignalData == null) {
-            Helper.showError("Błąd", "Brak sygnału do zapisania.");
-            return;
-        }
-
-        try {
-            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Zapisz sygnał tekstowo");
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt")
-            );
-            fileChooser.setInitialFileName(signalName + ".txt");
-
-            File file = fileChooser.showSaveDialog(generateButton.getScene().getWindow());
-            if (file == null) {
-                return;
-            }
-
-            currentSignalData.setName(signalName);
-            signalManager.saveSignalText(file.getAbsolutePath(), currentSignalData);
-            Helper.showInfo("Sukces", "Sygnał zapisano do pliku tekstowego.");
-
-        } catch (IllegalArgumentException e) {
-            Helper.showError("Błąd", e.getMessage());
-        } catch (IOException e) {
-            Helper.showError("Błąd zapisu", e.getMessage());
-        }
-    }
-
-    @FXML
-    private void onLoadTextClicked() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał tekstowy");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt")
-        );
-
-        File file = fileChooser.showOpenDialog(generateButton.getScene().getWindow());
-        if (file == null) {
-            return;
-        }
-
-        try {
-            SignalData loaded = signalManager.loadSignalText(file.getAbsolutePath());
-            currentSignalData = loaded;
-
-            signalNameInputField.setText(loaded.getName());
-            displayLoadedSignal(loaded);
-            refreshLoadedSignalsList();
-            Helper.showInfo("Sukces", "Sygnał wczytano z pliku tekstowego.");
-
-        } catch (IOException e) {
-            Helper.showError("Błąd odczytu", e.getMessage());
-        }
-    }
-
-    @FXML
     private void onShowLoadedSignalClicked() {
         String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
 
@@ -280,6 +231,41 @@ public class MainController implements Initializable{
         currentSignalData = signalData;
         signalNameInputField.setText(signalData.getName());
         displayLoadedSignal(signalData);
+    }
+
+    @FXML
+    private void onDeleteLoadedSignalClicked() {
+        String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
+        SignalType deletedSignalType = currentSignalData.getSignalType();
+
+        if (selectedName == null) {
+            Helper.showError("Błąd", "Wybierz sygnał z listy.");
+            return;
+        }
+
+        signalManager.removeLoadedSignal(selectedName);
+
+        // jeśli usunięty był aktualnie wyświetlany sygnał
+        if (currentSignalData != null && selectedName.equals(currentSignalData.getName())) {
+            currentSignalData = null;
+
+            if (isDiscreteSignal(deletedSignalType)) {
+                scatterSignalChart.getData().clear();
+            } else {
+                lineSignalChart.getData().clear();
+            }
+            histogramChart.getData().clear();
+
+        }
+
+        refreshLoadedSignalsList();
+        meanValueLabel.setText("-");
+        meanAbsValueLabel.setText("-");
+        rmsValueLabel.setText("-");
+        varianceValueLabel.setText("-");
+        averagePowerValueLabel.setText("-");
+
+        Helper.showInfo("Sukces", "Sygnał został usunięty.");
     }
 
     @FXML
@@ -303,6 +289,67 @@ public class MainController implements Initializable{
             loadedSignalsListView.getSelectionModel().select(signalName);
 
             Helper.showInfo("Sukces", "Sygnał dodano do listy.");
+
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onPerformSignalOperationClicked() {
+        try {
+            String signal1Name = operationSignal1ComboBox.getValue();
+            String signal2Name = operationSignal2ComboBox.getValue();
+            SignalOperationType operationType = signalOperationTypeComboBox.getValue();
+            String resultName = Helper.getStringFromField(operationResultNameField, "Nazwa wyniku");
+
+            if (signal1Name == null || signal2Name == null) {
+                Helper.showError("Błąd", "Wybierz oba sygnały.");
+                return;
+            }
+
+            if (operationType == null) {
+                Helper.showError("Błąd", "Wybierz operację.");
+                return;
+            }
+
+            if (signalManager.getLoadedSignal(resultName) != null) {
+                Helper.showError("Błąd", "Sygnał o takiej nazwie już istnieje.");
+                return;
+            }
+
+            SignalData signal1 = signalManager.getLoadedSignal(signal1Name);
+            SignalData signal2 = signalManager.getLoadedSignal(signal2Name);
+
+            validateSignalsCompatibility(signal1, signal2);
+
+            List<Sample> resultSamples = SampleOperations.execute(
+                    signal1.getSamples(),
+                    signal2.getSamples(),
+                    operationType
+            );
+
+            SignalParameters resultParams = new SignalParameters();
+            resultParams.setStartTime(signal1.getParameters().getStartTime());
+            resultParams.setSamplingFrequency(signal1.getParameters().getSamplingFrequency());
+
+            SignalData resultSignal = new SignalData(
+                    resultName,
+                    signal1.getSignalType(),
+                    resultParams,
+                    resultSamples
+            );
+
+            signalManager.addLoadedSignal(resultSignal);
+            currentSignalData = resultSignal;
+
+            refreshLoadedSignalsList();
+            loadedSignalsListView.getSelectionModel().select(resultName);
+            displayLoadedSignal(resultSignal);
+
+            signalNameInputField.setText(resultName);
+
+            Helper.showInfo("Sukces", "Operację wykonano poprawnie.");
 
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd", e.getMessage());
@@ -572,9 +619,72 @@ public class MainController implements Initializable{
 
         updateStatistics(samples);
         drawHistogram(samples);
+        showSignalDataAsText(signalData);
     }
 
     private void refreshLoadedSignalsList() {
-        loadedSignalsListView.getItems().setAll(signalManager.getLoadedSignals().keySet());
+//        loadedSignalsListView.getItems().setAll(signalManager.getLoadedSignals().keySet());
+        List<String> names = new ArrayList<>(signalManager.getLoadedSignals().keySet());
+
+        // ListView
+        loadedSignalsListView.getItems().setAll(names);
+
+        // ComboBoxy do operacji na sygnalach
+        refreshOperationSignalSelectors(names);
+    }
+
+    private void refreshOperationSignalSelectors(List<String> names) {
+        String selected1 = operationSignal1ComboBox.getValue();
+        String selected2 = operationSignal2ComboBox.getValue();
+
+        operationSignal1ComboBox.getItems().setAll(names);
+        operationSignal2ComboBox.getItems().setAll(names);
+
+        if (names.contains(selected1)) {
+            operationSignal1ComboBox.setValue(selected1);
+        }
+
+        if (names.contains(selected2)) {
+            operationSignal2ComboBox.setValue(selected2);
+        }
+    }
+
+    private void validateSignalsCompatibility(SignalData signal1, SignalData signal2) {
+        if (signal1.getSamples().size() != signal2.getSamples().size()) {
+            throw new IllegalArgumentException("Sygnały muszą mieć taką samą liczbę próbek.");
+        }
+
+        if (Math.abs(signal1.getParameters().getSamplingFrequency() - signal2.getParameters().getSamplingFrequency()) > 1e-9) {
+            throw new IllegalArgumentException("Sygnały muszą mieć taką samą częstotliwość próbkowania.");
+        }
+
+        if (Math.abs(signal1.getParameters().getStartTime() - signal2.getParameters().getStartTime()) > 1e-9) {
+            throw new IllegalArgumentException("Sygnały muszą mieć taki sam czas początkowy.");
+        }
+    }
+
+    private void showSignalDataAsText(SignalData signalData) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Nazwa: ").append(signalData.getName()).append("\n");
+        sb.append("Typ: ").append(signalData.getSignalType()).append("\n");
+
+        SignalParameters params = signalData.getParameters();
+        sb.append("Czas początkowy: ").append(params.getStartTime()).append("\n");
+        sb.append("Częstotliwość próbkowania: ").append(params.getSamplingFrequency()).append("\n");
+        sb.append("Czas trwania: ").append(params.getDuration()).append("\n");
+        sb.append("\n");
+
+        sb.append("Próbki:\n");
+        sb.append("time\tvalue\n");
+
+        for (Sample sample : signalData.getSamples()) {
+            sb.append(sample.getTime())
+                    .append("\t")
+                    .append(sample.getValue())
+                    .append("\n");
+        }
+
+        fileContentTextArea.setText(sb.toString());
     }
 }
