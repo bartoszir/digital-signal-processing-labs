@@ -105,141 +105,150 @@
       <items>
         <AnchorPane>
           <children>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                  <Label alignment="CENTER" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Panel zarządzania" textAlignment="CENTER" wrapText="false">
-                    <font>
-                      <Font size="18.0" fx:id="x1" />
-                    </font>
-                    <textFill>
-                      <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-                    </textFill>
-                  </Label>
-                        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
-                          <tabs>
-                            <Tab text="Untitled Tab 1">
-                                 <content>
-                                    <VBox prefHeight="200.0" spacing="10">
+              <VBox spacing="10" AnchorPane.topAnchor="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+             <children>
+              <Label text="Panel zarządzania"
+                     alignment="CENTER"
+                     maxWidth="1.7976931348623157E308"
+                     textAlignment="CENTER">
+                <font>
+                  <Font size="18.0" fx:id="x1" />
+                </font>
+                <textFill>
+                  <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
+                </textFill>
+              </Label>
+                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                  <tabs>
+                    <Tab text="Generowanie">
+                         <content>
+                            <VBox spacing="10">
+                                <padding>
+                                    <Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/>
+                                </padding>
+                               <children>
+                                  <Button fx:id="generateButton" mnemonicParsing="false" onAction="#onGenerateSignalClicked" text="Generuj" />
+                                 <Label layoutX="14.0" layoutY="53.0" text="Wybierz rodzaj sygnału:" />
+                                 <ComboBox fx:id="signalTypeComboBox" layoutX="14.0" layoutY="70.0" minWidth="300.0" prefWidth="300.0" />
+
+                                 <Label text="Podaj wartości parametrów:" />
+
+                                 <GridPane fx:id="paramsPane" hgap="10" vgap="8">
+                                   <children>
+                                     <Label text="Amplituda (A):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                     <TextField fx:id="amplitudeInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                     <Label text="Czas początkowy (t1):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                     <TextField fx:id="startTimeInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                     <Label text="Czas trwania sygnału (d):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                     <TextField fx:id="durationInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                     <Label text="Częstotliwość próbkowania (f):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                     <TextField fx:id="samplingFrequencyInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                   </children>
+                                     <columnConstraints>
+                                         <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                         <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                     </columnConstraints>
+                                     <rowConstraints>
+                                        <RowConstraints />
+                                        <RowConstraints />
+                                        <RowConstraints />
+                                        <RowConstraints />
+                                     </rowConstraints>
+                                 </GridPane>
+
+                                 <VBox fx:id="specificParamsContainer">
+                                   <children>
+                                     <GridPane fx:id="periodParamsPane" hgap="10" managed="false" vgap="8" visible="false">
                                        <children>
-                                          <Button mnemonicParsing="false" onAction="#onGenerateSignalClicked" text="Generuj" />
-                                         <Label layoutX="14.0" layoutY="53.0" text="Wybierz rodzaj sygnału:" />
-                                         <ComboBox fx:id="signalTypeComboBox" layoutX="14.0" layoutY="70.0" minWidth="300.0" prefWidth="300.0" />
-                  
-                                         <Label text="Podaj wartości parametrów:" />
-                  
-                                         <GridPane fx:id="paramsPane" hgap="10" vgap="8">
-                                           <children>
-                                             <Label text="Amplituda (A):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                             <TextField fx:id="amplitudeInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                  
-                                             <Label text="Czas początkowy (t1):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                             <TextField fx:id="startTimeInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  
-                                             <Label text="Czas trwania sygnału (d):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                                             <TextField fx:id="durationInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  
-                                             <Label text="Częstotliwość próbkowania (f):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                                             <TextField fx:id="samplingFrequencyInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                           </children>
-                                             <columnConstraints>
-                                                 <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                 <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                             </columnConstraints>
-                                             <rowConstraints>
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                             </rowConstraints>
-                                         </GridPane>
-                  
-                                         <VBox fx:id="specificParamsContainer">
-                                           <children>
-                                             <GridPane fx:id="periodParamsPane" hgap="10" managed="false" vgap="8" visible="false">
-                                               <children>
-                                                 <Label text="Okres podstawowy (T):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                 <TextField fx:id="periodInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                               </children>
-                                                   <columnConstraints>
-                                                       <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                       <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                             </GridPane>
-                  
-                                             <GridPane fx:id="rectangularParamsPane" hgap="10" managed="false" vgap="8" visible="false">
-                                               <children>
-                                                 <Label text="Okres podstawowy (T):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                 <TextField fx:id="periodRectangularInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                  
-                                                 <Label text="Współczynnik wypełnienia (kw):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                                 <TextField fx:id="kwInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                               </children>
-                                                   <columnConstraints>
-                                                       <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                       <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                             </GridPane>
-                  
-                                             <GridPane fx:id="jumpParamsPane" hgap="10" managed="false" vgap="8" visible="false">
-                                               <children>
-                                                 <Label text="Czas skoku (ts):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                 <TextField fx:id="tsInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                               </children>
-                                                   <columnConstraints>
-                                                       <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                       <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                             </GridPane>
-                  
-                                             <GridPane fx:id="unitImpulseParamsPane" hgap="10" managed="false" vgap="8" visible="false">
-                                               <children>
-                                                 <Label text="Numer próbki skoku (ns):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                 <TextField fx:id="nsInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                               </children>
-                                                   <columnConstraints>
-                                                       <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                       <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                             </GridPane>
-                  
-                                             <GridPane fx:id="impulseNoiseParamsPane" hgap="10" managed="false" vgap="8" visible="false">
-                                               <children>
-                                                 <Label text="Prawdopodobieństwo (p):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                 <TextField fx:id="pInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                               </children>
-                                                   <columnConstraints>
-                                                       <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                                                       <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                                                   </columnConstraints>
-                                                   <rowConstraints>
-                                                      <RowConstraints />
-                                                   </rowConstraints>
-                                             </GridPane>
-                                           </children>
-                                         </VBox>
-                  
+                                         <Label text="Okres podstawowy (T):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                         <TextField fx:id="periodInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                                        </children>
-                                    </VBox>
-                                 </content>
-                              </Tab>
-                            <Tab text="Untitled Tab 2" />
-                          </tabs>
-                        </TabPane>
-                     </children>
-                  </VBox>
+                                           <columnConstraints>
+                                               <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                               <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                              <RowConstraints />
+                                           </rowConstraints>
+                                     </GridPane>
+
+                                     <GridPane fx:id="rectangularParamsPane" hgap="10" managed="false" vgap="8" visible="false">
+                                       <children>
+                                         <Label text="Okres podstawowy (T):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                         <TextField fx:id="periodRectangularInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                         <Label text="Współczynnik wypełnienia (kw):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                         <TextField fx:id="kwInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                       </children>
+                                           <columnConstraints>
+                                               <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                               <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                              <RowConstraints />
+                                              <RowConstraints />
+                                           </rowConstraints>
+                                     </GridPane>
+
+                                     <GridPane fx:id="jumpParamsPane" hgap="10" managed="false" vgap="8" visible="false">
+                                       <children>
+                                         <Label text="Czas skoku (ts):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                         <TextField fx:id="tsInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                       </children>
+                                           <columnConstraints>
+                                               <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                               <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                              <RowConstraints />
+                                           </rowConstraints>
+                                     </GridPane>
+
+                                     <GridPane fx:id="unitImpulseParamsPane" hgap="10" managed="false" vgap="8" visible="false">
+                                       <children>
+                                         <Label text="Numer próbki skoku (ns):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                         <TextField fx:id="nsInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                       </children>
+                                           <columnConstraints>
+                                               <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                               <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                              <RowConstraints />
+                                           </rowConstraints>
+                                     </GridPane>
+
+                                     <GridPane fx:id="impulseNoiseParamsPane" hgap="10" managed="false" vgap="8" visible="false">
+                                       <children>
+                                         <Label text="Prawdopodobieństwo (p):" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                         <TextField fx:id="pInputField" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                       </children>
+                                           <columnConstraints>
+                                               <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                               <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                           </columnConstraints>
+                                           <rowConstraints>
+                                              <RowConstraints />
+                                           </rowConstraints>
+                                     </GridPane>
+                                   </children>
+                                 </VBox>
+
+                               </children>
+                            </VBox>
+                         </content>
+                      </Tab>
+                      <Tab text="Untitled Tab 2">
+                        <content>
+                        </content>
+                      </Tab>
+                  </tabs>
+                </TabPane>
+             </children>
+          </VBox>
           </children>
         </AnchorPane>
 

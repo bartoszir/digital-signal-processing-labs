@@ -2,8 +2,8 @@ package dsp.task1.view.controller;
 
 import dsp.task1.logic.*;
 import dsp.task1.logic.signal.SignalType;
-import dsp.task1.view.utils.Helper;
 
+import dsp.task1.view.utils.Helper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
@@ -65,7 +65,9 @@ public class MainController implements Initializable{
     @FXML private NumberAxis scatterYAxis;
 
     /*------------------- Others -------------------*/
+    @FXML private Button generateButton;
     private final SignalManager signalManager = new SignalManager();
+
 
 
     /*========================= METHODS =========================*/
@@ -98,12 +100,13 @@ public class MainController implements Initializable{
     @FXML
     private void onGenerateSignalClicked() {
         try {
+            clearFieldStyles();
             SignalType selectedType = signalTypeComboBox.getValue();
             if (selectedType == null) {
                 return;
             }
 
-            SignalParameters parameters = buildParameters();
+            SignalParameters parameters = buildParameters(selectedType);
             List<Sample> samples = signalManager.generateSignalSamples(selectedType, parameters);
 
             if (isDiscreteSignal(selectedType)) {
@@ -114,8 +117,8 @@ public class MainController implements Initializable{
 
             updateStatistics(samples);
             drawHistogram(samples);
-        } catch (NumberFormatException e) {
-            System.out.println("Niepoprawny format liczby.");
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd danych", e.getMessage());
         }
 
     }
@@ -235,19 +238,65 @@ public class MainController implements Initializable{
         updateSpecificParamsVisibility();
     }
 
-    private SignalParameters buildParameters() {
+    private SignalParameters buildParameters(SignalType selectedType) {
         SignalParameters params = new SignalParameters();
 
-        params.setAmplitude(getDoubleFromField(amplitudeInputField));
-        params.setStartTime(getDoubleFromField(startTimeInputField));
-        params.setDuration(getDoubleFromField(durationInputField));
-        params.setSamplingFrequency(getDoubleFromField(samplingFrequencyInputField));
+        // podstawowe parametry
+        double amplitude = getDoubleFromField(amplitudeInputField, "Amplituda (A)");
+        double startTime = getDoubleFromField(startTimeInputField, "Czas początkowy (t1)");
+        double duration = getDoubleFromField(durationInputField, "Czas trwania (d)");
+        double samplingFrequency = getDoubleFromField(samplingFrequencyInputField, "Częstotliwość próbkowania (f)");
 
-        params.setPeriod(getDoubleFromField(periodInputField));
-        params.setKw(getDoubleFromField(kwInputField));
-        params.setTs(getDoubleFromField(tsInputField));
-        params.setNs(getIntFromField(nsInputField));
-        params.setP(getDoubleFromField(pInputField));
+        Helper.validatePositive(duration, "Czas trwania sygnału (d)", durationInputField);
+        Helper.validatePositive(samplingFrequency, "Częstotliwość próbkowania (f)", samplingFrequencyInputField);
+
+        params.setAmplitude(amplitude);
+        params.setStartTime(startTime);
+        params.setDuration(duration);
+        params.setSamplingFrequency(samplingFrequency);
+
+        switch (selectedType) {
+            case SINUSOIDAL_SIGNAL,
+                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
+                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL -> {
+                double period = getDoubleFromField(periodInputField, "Okres podstawowy (T)");
+                Helper.validatePositive(period, "Okres podstawowy (T)", periodInputField);
+                params.setPeriod(period);
+            }
+
+            case RECTANGULAR_SIGNAL,
+                 SYMMETRIC_RECTANGULAR_SIGNAL,
+                 TRIANGULAR_SIGNAL -> {
+                double period = getDoubleFromField(periodRectangularInputField, "Okres podstawowy (T)");
+                double kw = getDoubleFromField(kwInputField, "Współczynnik wypełnienia (kw)");
+
+                Helper.validatePositive(period, "Okres podstawowy (T)", periodRectangularInputField);
+                Helper.validateKw(kw, "Współczynnik wypełnienia (kw)", kwInputField);
+
+                params.setPeriod(period);
+                params.setKw(kw);
+            }
+
+            case UNIT_JUMP_SIGNAL -> {
+                double ts = getDoubleFromField(tsInputField, "Czas skoku (ts)");
+                params.setTs(ts);
+            }
+
+            case UNIT_IMPULSE_SIGNAL -> {
+                int ns = getIntFromField(nsInputField, "Numer próbki skoku (ns)");
+                Helper.validateNonNegative(ns, "Numer próbki skoku (ns)", nsInputField);
+                params.setNs(ns);
+            }
+
+            case IMPULSE_NOISE_SIGNAL -> {
+                double p = getDoubleFromField(pInputField, "Prawdopodobieństwo (p)");
+                Helper.validateProbability(p, "Prawdopodobieństwo (p)", pInputField);
+                params.setP(p);
+            }
+
+            case UNIFORM_NOISE, GAUSSIAN_NOISE -> {
+            }
+        }
 
         return params;
     }
@@ -310,5 +359,18 @@ public class MainController implements Initializable{
 
         histogramChart.getData().clear();
         histogramChart.getData().add(series);
+    }
+
+    private void clearFieldStyles() {
+        amplitudeInputField.setStyle("");
+        startTimeInputField.setStyle("");
+        durationInputField.setStyle("");
+        samplingFrequencyInputField.setStyle("");
+        periodInputField.setStyle("");
+        periodRectangularInputField.setStyle("");
+        kwInputField.setStyle("");
+        tsInputField.setStyle("");
+        nsInputField.setStyle("");
+        pInputField.setStyle("");
     }
 }
