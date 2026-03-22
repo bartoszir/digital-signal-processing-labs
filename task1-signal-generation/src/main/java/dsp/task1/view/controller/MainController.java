@@ -9,7 +9,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -64,9 +67,15 @@ public class MainController implements Initializable{
     @FXML private NumberAxis scatterXAxis;
     @FXML private NumberAxis scatterYAxis;
 
+    /*------------------- Zapis/Odczyt -------------------*/
+    @FXML private TextField signalNameInputField;
+    @FXML private javafx.scene.control.ListView<String> loadedSignalsListView;
+    @FXML private Button showLoadedSignalButton;
+
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
     private final SignalManager signalManager = new SignalManager();
+    private SignalData currentSignalData; // ostatnio wygenerowany SignalData
 
 
 
@@ -86,6 +95,7 @@ public class MainController implements Initializable{
         histogramYAxis.setLabel("Liczba próbek");
 
         setDefaultValues();
+        refreshLoadedSignalsList();
 
         lineSignalChart.setAnimated(false);
         lineSignalChart.setCreateSymbols(false); // czy pokazywac punkty probek
@@ -109,6 +119,17 @@ public class MainController implements Initializable{
             SignalParameters parameters = buildParameters(selectedType);
             List<Sample> samples = signalManager.generateSignalSamples(selectedType, parameters);
 
+            currentSignalData = new SignalData(
+                    "currentSignal",
+                    selectedType,
+                    parameters,
+                    samples
+            );
+
+            if (signalNameInputField.getText().trim().isEmpty()) {
+                signalNameInputField.setText(selectedType.name().toLowerCase());
+            }
+
             if (isDiscreteSignal(selectedType)) {
                 drawScatterSamples(samples, selectedType.getName());
             } else {
@@ -121,6 +142,171 @@ public class MainController implements Initializable{
             Helper.showError("Błąd danych", e.getMessage());
         }
 
+    }
+
+    @FXML
+    private void onSaveBinaryClicked() {
+        if (currentSignalData == null) {
+            Helper.showError("Błąd", "Brak sygnału do zapisania.");
+            return;
+        }
+
+        try {
+            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Zapisz sygnał binarnie");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Pliki binarne", "*.bin")
+            );
+            fileChooser.setInitialFileName(signalName + ".bin");
+
+            File file = fileChooser.showSaveDialog(generateButton.getScene().getWindow());
+            if (file == null) {
+                return;
+            }
+
+            currentSignalData.setName(signalName);
+            signalManager.saveSignalBinary(file.getAbsolutePath(), currentSignalData);
+            Helper.showInfo("Sukces", "Sygnał zapisano do pliku binarnego.");
+
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd", e.getMessage());
+        } catch (IOException e) {
+            Helper.showError("Błąd zapisu", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onLoadBinaryClicked() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Wczytaj sygnał binarny");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Pliki binarne", "*.bin")
+        );
+
+        File file = fileChooser.showOpenDialog(generateButton.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        try {
+            SignalData loaded = signalManager.loadSignalBinary(file.getAbsolutePath());
+            currentSignalData = loaded;
+            signalNameInputField.setText(loaded.getName());
+            displayLoadedSignal(loaded);
+            refreshLoadedSignalsList();
+            Helper.showInfo("Sukces", "Sygnał wczytano z pliku binarnego.");
+        } catch (IOException e) {
+            Helper.showError("Błąd odczytu", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onSaveTextClicked() {
+        if (currentSignalData == null) {
+            Helper.showError("Błąd", "Brak sygnału do zapisania.");
+            return;
+        }
+
+        try {
+            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Zapisz sygnał tekstowo");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt")
+            );
+            fileChooser.setInitialFileName(signalName + ".txt");
+
+            File file = fileChooser.showSaveDialog(generateButton.getScene().getWindow());
+            if (file == null) {
+                return;
+            }
+
+            currentSignalData.setName(signalName);
+            signalManager.saveSignalText(file.getAbsolutePath(), currentSignalData);
+            Helper.showInfo("Sukces", "Sygnał zapisano do pliku tekstowego.");
+
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd", e.getMessage());
+        } catch (IOException e) {
+            Helper.showError("Błąd zapisu", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onLoadTextClicked() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Wczytaj sygnał tekstowy");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Pliki tekstowe", "*.txt")
+        );
+
+        File file = fileChooser.showOpenDialog(generateButton.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+
+        try {
+            SignalData loaded = signalManager.loadSignalText(file.getAbsolutePath());
+            currentSignalData = loaded;
+
+            signalNameInputField.setText(loaded.getName());
+            displayLoadedSignal(loaded);
+            refreshLoadedSignalsList();
+            Helper.showInfo("Sukces", "Sygnał wczytano z pliku tekstowego.");
+
+        } catch (IOException e) {
+            Helper.showError("Błąd odczytu", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onShowLoadedSignalClicked() {
+        String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
+
+        if (selectedName == null) {
+            Helper.showError("Błąd", "Wybierz sygnał z listy.");
+            return;
+        }
+
+        SignalData signalData = signalManager.getLoadedSignal(selectedName);
+        if (signalData == null) {
+            Helper.showError("Błąd", "Nie znaleziono sygnału w pamięci programu.");
+            return;
+        }
+
+        currentSignalData = signalData;
+        signalNameInputField.setText(signalData.getName());
+        displayLoadedSignal(signalData);
+    }
+
+    @FXML
+    private void onAddToLoadedSignalsClicked() {
+        if (currentSignalData == null) {
+            Helper.showError("Błąd", "Brak wygenerowanego sygnału do dodania.");
+            return;
+        }
+
+        try {
+            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
+
+            if (signalManager.getLoadedSignal(signalName) != null) {
+                Helper.showError("Błąd", "Sygnał o tej nazwie już istnieje na liście.");
+                return;
+            }
+
+            currentSignalData.setName(signalName);
+            signalManager.addLoadedSignal(currentSignalData);
+            refreshLoadedSignalsList();
+            loadedSignalsListView.getSelectionModel().select(signalName);
+
+            Helper.showInfo("Sukces", "Sygnał dodano do listy.");
+
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd", e.getMessage());
+        }
     }
 
     private void drawLineSamples(List<Sample> samples, String seriesName) {
@@ -372,5 +558,23 @@ public class MainController implements Initializable{
         tsInputField.setStyle("");
         nsInputField.setStyle("");
         pInputField.setStyle("");
+    }
+
+    private void displayLoadedSignal(SignalData signalData) {
+        List<Sample> samples = signalData.getSamples();
+        SignalType type = signalData.getSignalType();
+
+        if (isDiscreteSignal(type)) {
+            drawScatterSamples(samples, signalData.getName());
+        } else {
+            drawLineSamples(samples, signalData.getName());
+        }
+
+        updateStatistics(samples);
+        drawHistogram(samples);
+    }
+
+    private void refreshLoadedSignalsList() {
+        loadedSignalsListView.getItems().setAll(signalManager.getLoadedSignals().keySet());
     }
 }
