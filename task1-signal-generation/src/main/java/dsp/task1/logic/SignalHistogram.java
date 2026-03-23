@@ -1,36 +1,92 @@
 package dsp.task1.logic;
 
+import dsp.task1.logic.signal.SignalType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SignalHistogram {
-    public static List<HistogramBin> generate(List<Sample> samples, int numberOfBins) {
+    private static final double EPS = 1e-9;
+
+    private static boolean isPeriodic(SignalType type) {
+        return switch (type) {
+            case SINUSOIDAL_SIGNAL,
+                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
+                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
+                 RECTANGULAR_SIGNAL,
+                 SYMMETRIC_RECTANGULAR_SIGNAL,
+                 TRIANGULAR_SIGNAL -> true;
+            default -> false;
+        };
+    }
+
+    private static int getValidSampleCount(SignalData signalData) {
+        List<Sample> samples = signalData.getSamples();
+
+        if (samples == null || samples.isEmpty()) {
+            return 0;
+        }
+
+        if (!isPeriodic(signalData.getSignalType())) {
+            return samples.size();
+        }
+
+        SignalParameters params = signalData.getParameters();
+        double period = params.getPeriod();
+        double samplingFrequency = params.getSamplingFrequency();
+
+        if (period <= EPS || samplingFrequency <= EPS) {
+            return samples.size();
+        }
+
+        int samplesPerPeriod = (int) Math.round(period * samplingFrequency);
+        if (samplesPerPeriod <= 0) {
+            return samples.size();
+        }
+
+        int fullPeriods = samples.size() / samplesPerPeriod;
+        int validCount = fullPeriods * samplesPerPeriod;
+
+        if (validCount == 0) {
+            throw new IllegalArgumentException("Za mało próbek do wyznaczenia pełnego okresu sygnału.");
+        }
+
+        return validCount;
+    }
+
+    public static List<HistogramBin> generate(SignalData signalData, int numberOfBins) {
         List<HistogramBin> bins = new ArrayList<>();
 
+        List<Sample> samples = signalData.getSamples();
         if (samples == null || samples.isEmpty() || numberOfBins <= 0) {
             return bins;
         }
 
-        double min = samples.stream()
-                .mapToDouble(Sample::getValue)
-                .min()
-                .orElse(0.0);
+        int validCount = getValidSampleCount(signalData);
 
-        double max = samples.stream()
-                .mapToDouble(Sample::getValue)
-                .max()
-                .orElse(0.0);
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
 
-        if (min == max) {
-            bins.add(new HistogramBin(String.format("[%.2f]", min), samples.size()));
+        for (int i = 0; i < validCount; i++) {
+            double value = samples.get(i).getValue();
+            if (value < min) {
+                min = value;
+            }
+            if (value > max) {
+                max = value;
+            }
+        }
+
+        if (Math.abs(min - max) < EPS) {
+            bins.add(new HistogramBin(String.format("[%.2f]", min), validCount));
             return bins;
         }
 
         double binWidth = (max - min) / numberOfBins;
         int[] counts = new int[numberOfBins];
 
-        for (Sample sample : samples) {
-            double value = sample.getValue();
+        for (int i = 0; i < validCount; i++) {
+            double value = samples.get(i).getValue();
 
             int index = (int) ((value - min) / binWidth);
 

@@ -147,8 +147,8 @@ public class MainController implements Initializable{
                 drawLineSamples(samples, selectedType.getName());
             }
 
-            updateStatistics(samples);
-            drawHistogram(samples);
+            updateStatistics(currentSignalData);
+            drawHistogram(currentSignalData);
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd danych", e.getMessage());
         }
@@ -371,16 +371,6 @@ public class MainController implements Initializable{
         if (series.getNode() != null) {
             series.getNode().setStyle("-fx-stroke-width: 2px;"); // kolor i grubosc serii po jej dodaniu
         }
-
-//        for (XYChart.Data<Number, Number> data : series.getData()) {
-//            if (data.getNode() != null) {
-//                data.getNode().setStyle(
-//                        "-fx-background-color: red, white;" +
-//                                "-fx-background-radius: 1px;" +
-//                                "-fx-padding: 2px;"
-//                );
-//            }
-//        }
     }
 
     private void drawScatterSamples(List<Sample> samples, String seriesName) {
@@ -557,12 +547,12 @@ public class MainController implements Initializable{
         };
     }
 
-    private void updateStatistics(List<Sample> samples) {
-        double mean = SignalStatistics.mean(samples);
-        double meanAbs = SignalStatistics.meanAbsoluteValue(samples);
-        double rms = SignalStatistics.rms(samples);
-        double variance = SignalStatistics.variance(samples);
-        double avgPower = SignalStatistics.averagePower(samples);
+    private void updateStatistics(SignalData signalData) {
+        double mean = SignalStatistics.mean(signalData);
+        double meanAbs = SignalStatistics.meanAbsoluteValue(signalData);
+        double rms = SignalStatistics.rms(signalData);
+        double variance = SignalStatistics.variance(signalData);
+        double avgPower = SignalStatistics.averagePower(signalData);
 
         meanValueLabel.setText(format(mean));
         meanAbsValueLabel.setText(format(meanAbs));
@@ -575,13 +565,13 @@ public class MainController implements Initializable{
         return String.format("%.4f", value);
     }
 
-    private void drawHistogram(List<Sample> samples) {
+    private void drawHistogram(SignalData signalData) {
         Integer binsCount = histogramBinsSpinner.getValue();
         if (binsCount == null) {
             binsCount = 10;
         }
 
-        List<HistogramBin> bins = SignalHistogram.generate(samples, binsCount);
+        List<HistogramBin> bins = SignalHistogram.generate(signalData, binsCount);
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Histogram");
@@ -617,8 +607,8 @@ public class MainController implements Initializable{
             drawLineSamples(samples, signalData.getName());
         }
 
-        updateStatistics(samples);
-        drawHistogram(samples);
+        updateStatistics(currentSignalData);
+        drawHistogram(currentSignalData);
         showSignalDataAsText(signalData);
     }
 
@@ -671,8 +661,11 @@ public class MainController implements Initializable{
 
         SignalParameters params = signalData.getParameters();
         sb.append("Czas początkowy: ").append(params.getStartTime()).append("\n");
+//        sb.append("Czas trwania: ").append(params.getDuration()).append("\n");
+        sb.append("Okres podstawowy: ").append(params.getPeriod()).append("\n");
         sb.append("Częstotliwość próbkowania: ").append(params.getSamplingFrequency()).append("\n");
-        sb.append("Czas trwania: ").append(params.getDuration()).append("\n");
+        sb.append("Rodzaj wartości: rzeczywiste").append("\n");
+        sb.append("Liczba próbek: ").append(signalData.getSamples().size()).append("\n");
         sb.append("\n");
 
         sb.append("Próbki:\n");

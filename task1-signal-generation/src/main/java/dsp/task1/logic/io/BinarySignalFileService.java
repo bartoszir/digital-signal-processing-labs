@@ -24,11 +24,11 @@ public class BinarySignalFileService implements SignalFileService {
 
             SignalParameters params = signalData.getParameters();
             out.writeDouble(params.getStartTime());
-            out.writeDouble(params.getDuration());
+            out.writeDouble(params.getPeriod());
+//            out.writeDouble(params.getDuration());
             out.writeDouble(params.getSamplingFrequency());
 
             out.writeInt(VALUE_TYPE_REAL);
-
 
             List<Sample> samples = signalData.getSamples();
             out.writeInt(samples.size());
@@ -53,10 +53,11 @@ public class BinarySignalFileService implements SignalFileService {
             SignalType signalType = SignalType.valueOf(in.readUTF());
 
             double startTime = in.readDouble();
-            double duration = in.readDouble();
-            if (duration <= 0) {
-                throw new IOException("Niepoprawna długość sygnału w pliku.");
-            }
+//            double duration = in.readDouble();
+//            if (duration <= 0) {
+//                throw new IOException("Niepoprawna długość sygnału w pliku.");
+//            }
+            double period = in.readDouble();
 
             double samplingFrequency = in.readDouble();
             if (samplingFrequency <= 0) {
@@ -85,7 +86,7 @@ public class BinarySignalFileService implements SignalFileService {
 
             SignalParameters parameters = new SignalParameters();
             parameters.setStartTime(startTime);
-            parameters.setDuration(duration);
+//            parameters.setDuration(duration);
             parameters.setSamplingFrequency(samplingFrequency);
 
             return new SignalData(name, signalType, parameters, samples);
