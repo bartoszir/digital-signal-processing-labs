@@ -12,6 +12,7 @@ import java.util.List;
 public class BinarySignalFileService implements SignalFileService {
     private static final String FILE_HEADER = "CPS_SIGNAL_BIN";
     private static final int VALUE_TYPE_REAL = 0;
+    private static final double NO_PERIOD = -1.0;
 
     @Override
     public void save(String fileName, SignalData signalData) throws IOException {
@@ -24,7 +25,9 @@ public class BinarySignalFileService implements SignalFileService {
 
             SignalParameters params = signalData.getParameters();
             out.writeDouble(params.getStartTime());
-            out.writeDouble(params.getPeriod());
+            double period = signalData.getSignalType() == SignalType.OPERATION_RESULT
+                    ? NO_PERIOD : params.getPeriod();
+            out.writeDouble(period);
 //            out.writeDouble(params.getDuration());
             out.writeDouble(params.getSamplingFrequency());
 
@@ -87,6 +90,9 @@ public class BinarySignalFileService implements SignalFileService {
             SignalParameters parameters = new SignalParameters();
             parameters.setStartTime(startTime);
 //            parameters.setDuration(duration);
+            if (period != NO_PERIOD) {
+                parameters.setPeriod(period);
+            }
             parameters.setSamplingFrequency(samplingFrequency);
 
             return new SignalData(name, signalType, parameters, samples);

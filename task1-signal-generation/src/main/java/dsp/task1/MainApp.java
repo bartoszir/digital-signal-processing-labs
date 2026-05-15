@@ -14,6 +14,7 @@ public class MainApp extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApp.class.getResource("main-view-v2.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1300, 700);
+        scene.getStylesheets().add(MainApp.class.getResource("style.css").toExternalForm());
         stage.setTitle("CPS");
         stage.setScene(scene);
         stage.setResizable(false);
