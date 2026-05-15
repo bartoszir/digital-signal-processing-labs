@@ -1,6 +1,7 @@
 package dsp.task1.logic.service;
 
 import dsp.task1.logic.io.BinarySignalFileService;
+import dsp.task1.logic.io.SignalFileException;
 import dsp.task1.logic.model.Sample;
 import dsp.task1.logic.model.SignalData;
 import dsp.task1.logic.model.SignalParameters;
@@ -37,7 +38,7 @@ public class SignalManager {
         binaryFileService.save(fileName, signalData);
     }
 
-    public SignalData loadSignalBinary(String fileName) throws IOException {
+    public SignalData loadSignalBinary(String fileName) throws SignalFileException, IOException {
         SignalData signalData = binaryFileService.load(fileName);
         addLoadedSignal(signalData);
         return signalData;
@@ -60,6 +61,15 @@ public class SignalManager {
     }
 
     public List<Sample> generateSignalSamples(SignalType type, SignalParameters p) {
+        if (p.getSamplingFrequency() <= 0) {
+            throw new IllegalArgumentException("Częstotliwość próbkowania musi być większa od 0.");
+        }
+        if (p.getDuration() <= 0) {
+            throw new IllegalArgumentException("Czas trwania sygnału musi być większy od 0.");
+        }
+        if (p.getAmplitude() == 0) {
+            throw new IllegalArgumentException("Amplituda nie może być równa 0.");
+        }
 
         Signal signal = switch (type) {
             case UNIFORM_NOISE ->

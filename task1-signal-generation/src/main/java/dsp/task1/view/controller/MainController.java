@@ -5,6 +5,7 @@ import dsp.task1.logic.model.SignalData;
 import dsp.task1.logic.model.SignalParameters;
 import dsp.task1.logic.operations.SampleOperations;
 import dsp.task1.logic.operations.SignalOperationType;
+import dsp.task1.logic.io.SignalFileException;
 import dsp.task1.logic.service.SignalManager;
 import dsp.task1.logic.signal.SignalType;
 import dsp.task1.view.utils.ChartService;
@@ -187,17 +188,19 @@ public class MainController implements Initializable {
             showSignalDataAsText(currentSignalData);
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd danych", e.getMessage());
+        } catch (Exception e) {
+            Helper.showError("Nieoczekiwany błąd", "Wystąpił nieoczekiwany błąd: " + e.getMessage());
         }
     }
 
     @FXML
     private void onSaveBinaryClicked() {
-        if (currentSignalData == null) {
-            Helper.showError("Błąd", "Brak sygnału do zapisania.");
-            return;
-        }
-
         try {
+            if (currentSignalData == null) {
+                Helper.showError("Błąd", "Brak sygnału do zapisania.");
+                return;
+            }
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Zapisz sygnał binarnie");
             fileChooser.getExtensionFilters().add(
@@ -213,9 +216,9 @@ public class MainController implements Initializable {
             signalManager.saveSignalBinary(file.getAbsolutePath(), currentSignalData);
             Helper.showInfo("Sukces", "Sygnał zapisano do pliku binarnego.");
         } catch (IllegalArgumentException e) {
-            Helper.showError("Błąd", e.getMessage());
-        } catch (IOException e) {
-            Helper.showError("Błąd zapisu", e.getMessage());
+            Helper.showError("Błąd danych", e.getMessage());
+        } catch (Exception e) {
+            Helper.showError("Nieoczekiwany błąd", "Wystąpił nieoczekiwany błąd: " + e.getMessage());
         }
     }
 
@@ -239,37 +242,51 @@ public class MainController implements Initializable {
             refreshLoadedSignalsList();
             loadedSignalsListView.getSelectionModel().select(loaded.getName());
             Helper.showInfo("Sukces", "Sygnał wczytano z pliku binarnego.");
-        } catch (IOException e) {
-            Helper.showError("Błąd odczytu", e.getMessage());
+        } catch (SignalFileException e) {
+            Helper.showError("Błąd pliku", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd danych", e.getMessage());
+        } catch (Exception e) {
+            Helper.showError("Nieoczekiwany błąd", "Wystąpił nieoczekiwany błąd: " + e.getMessage());
         }
     }
 
     @FXML
     private void onDeleteLoadedSignalClicked() {
-        String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
-        SignalType deletedSignalType = currentSignalData.getSignalType();
-
-        if (selectedName == null) {
-            Helper.showError("Błąd", "Wybierz sygnał z listy.");
-            return;
-        }
-
-        signalManager.removeLoadedSignal(selectedName);
-
-        if (currentSignalData != null && selectedName.equals(currentSignalData.getName())) {
-            currentSignalData = null;
-
-            if (isDiscreteSignal(deletedSignalType)) {
-                scatterSignalChart.getData().clear();
-            } else {
-                lineSignalChart.getData().clear();
+        try {
+            String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
+            if (selectedName == null) {
+                Helper.showError("Błąd", "Wybierz sygnał z listy.");
+                return;
             }
-            histogramChart.getData().clear();
-        }
 
-        refreshLoadedSignalsList();
-        statisticsDisplayService.clearStatistics();
-        Helper.showInfo("Sukces", "Sygnał został usunięty.");
+            if (currentSignalData == null) {
+                Helper.showError("Błąd", "Brak aktywnego sygnału.");
+                return;
+            }
+
+            SignalType deletedSignalType = currentSignalData.getSignalType();
+            signalManager.removeLoadedSignal(selectedName);
+
+            if (selectedName.equals(currentSignalData.getName())) {
+                currentSignalData = null;
+
+                if (isDiscreteSignal(deletedSignalType)) {
+                    scatterSignalChart.getData().clear();
+                } else {
+                    lineSignalChart.getData().clear();
+                }
+                histogramChart.getData().clear();
+            }
+
+            refreshLoadedSignalsList();
+            statisticsDisplayService.clearStatistics();
+            Helper.showInfo("Sukces", "Sygnał został usunięty.");
+        } catch (IllegalArgumentException e) {
+            Helper.showError("Błąd danych", e.getMessage());
+        } catch (Exception e) {
+            Helper.showError("Nieoczekiwany błąd", "Wystąpił nieoczekiwany błąd: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -293,6 +310,11 @@ public class MainController implements Initializable {
 
             SignalData signal1 = signalManager.getLoadedSignal(signal1Name);
             SignalData signal2 = signalManager.getLoadedSignal(signal2Name);
+
+            if (signal1 == null || signal2 == null) {
+                Helper.showError("Błąd", "Nie można znaleźć wybranych sygnałów.");
+                return;
+            }
 
             validateSignalsCompatibility(signal1, signal2);
 
@@ -323,7 +345,9 @@ public class MainController implements Initializable {
 
             Helper.showInfo("Sukces", "Operację wykonano poprawnie.");
         } catch (IllegalArgumentException e) {
-            Helper.showError("Błąd", e.getMessage());
+            Helper.showError("Błąd danych", e.getMessage());
+        } catch (Exception e) {
+            Helper.showError("Nieoczekiwany błąd", "Wystąpił nieoczekiwany błąd: " + e.getMessage());
         }
     }
 

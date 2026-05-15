@@ -28,7 +28,6 @@ public class BinarySignalFileService implements SignalFileService {
             double period = signalData.getSignalType() == SignalType.OPERATION_RESULT
                     ? NO_PERIOD : params.getPeriod();
             out.writeDouble(period);
-//            out.writeDouble(params.getDuration());
             out.writeDouble(params.getSamplingFrequency());
 
             out.writeInt(VALUE_TYPE_REAL);
@@ -43,40 +42,41 @@ public class BinarySignalFileService implements SignalFileService {
     }
 
     @Override
-    public SignalData load (String fileName) throws IOException {
+    public SignalData load(String fileName) throws SignalFileException, IOException {
         try (DataInputStream in = new DataInputStream(
                 new BufferedInputStream(new FileInputStream(fileName)))) {
 
             String header = in.readUTF();
             if (!FILE_HEADER.equals(header)) {
-                throw new IOException("Niepoprawny format pliku binarnego.");
+                throw new SignalFileException("Niepoprawny format pliku binarnego.");
             }
 
             String name = in.readUTF();
-            SignalType signalType = SignalType.valueOf(in.readUTF());
+
+            SignalType signalType;
+            try {
+                signalType = SignalType.valueOf(in.readUTF());
+            } catch (IllegalArgumentException e) {
+                throw new SignalFileException("Nieznany typ sygnału w pliku.", e);
+            }
 
             double startTime = in.readDouble();
-//            double duration = in.readDouble();
-//            if (duration <= 0) {
-//                throw new IOException("Niepoprawna długość sygnału w pliku.");
-//            }
             double period = in.readDouble();
 
             double samplingFrequency = in.readDouble();
             if (samplingFrequency <= 0) {
-                throw new IOException("Niepoprawna częstotliwość próbkowania w pliku.");
+                throw new SignalFileException("Niepoprawna częstotliwość próbkowania w pliku.");
             }
 
             int valueType = in.readInt();
             if (valueType != VALUE_TYPE_REAL) {
-                throw new IOException("Nieobsługiwany typ wartości w pliku.");
+                throw new SignalFileException("Nieobsługiwany typ wartości w pliku.");
             }
 
             int sampleCount = in.readInt();
             if (sampleCount < 0) {
-                throw new IOException("Niepoprawna liczba próbek w pliku.");
+                throw new SignalFileException("Niepoprawna liczba próbek w pliku.");
             }
-
 
             List<Sample> samples = new ArrayList<>();
             double dt = 1.0 / samplingFrequency;
@@ -89,7 +89,6 @@ public class BinarySignalFileService implements SignalFileService {
 
             SignalParameters parameters = new SignalParameters();
             parameters.setStartTime(startTime);
-//            parameters.setDuration(duration);
             if (period != NO_PERIOD) {
                 parameters.setPeriod(period);
             }

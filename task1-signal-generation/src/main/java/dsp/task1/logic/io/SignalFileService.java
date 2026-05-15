@@ -23,5 +23,5 @@ public interface SignalFileService {
 
     void save(String fileName, SignalData signalData) throws IOException;
 
-    SignalData load(String fileName) throws IOException;
+    SignalData load(String fileName) throws SignalFileException, IOException;
 }
