@@ -71,16 +71,13 @@ public class MainController implements Initializable{
     @FXML private NumberAxis scatterYAxis;
 
     /*------------------- Zapis/Odczyt -------------------*/
-    @FXML private TextField signalNameInputField;
     @FXML private javafx.scene.control.ListView<String> loadedSignalsListView;
-    @FXML private Button showLoadedSignalButton;
     @FXML private TextArea fileContentTextArea;
 
     /*------------------- Operacje na sygnałach -------------------*/
     @FXML private ComboBox<String> operationSignal1ComboBox;
     @FXML private ComboBox<String> operationSignal2ComboBox;
     @FXML private ComboBox<SignalOperationType> signalOperationTypeComboBox;
-    @FXML private TextField operationResultNameField;
     @FXML private Button performOperationButton;
 
     /*------------------- Others -------------------*/
@@ -108,14 +105,28 @@ public class MainController implements Initializable{
         setDefaultValues();
         refreshLoadedSignalsList();
 
+        loadedSignalsListView.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldVal, newVal) -> {
+                    if (newVal == null) return;
+                    SignalData signalData = signalManager.getLoadedSignal(newVal);
+                    if (signalData == null) return;
+                    currentSignalData = signalData;
+                    displayLoadedSignal(signalData);
+                }
+        );
+
         signalOperationTypeComboBox.getItems().setAll(SignalOperationType.values());
 
         lineSignalChart.setAnimated(false);
-        lineSignalChart.setCreateSymbols(false); // czy pokazywac punkty probek
+        lineSignalChart.setCreateSymbols(false);
+        lineSignalChart.setHorizontalZeroLineVisible(true);
+        lineSignalChart.setVerticalZeroLineVisible(true);
         lineXAxis.setAnimated(false);
         lineYAxis.setAnimated(false);
 
         scatterSignalChart.setAnimated(false);
+        scatterSignalChart.setHorizontalZeroLineVisible(true);
+        scatterSignalChart.setVerticalZeroLineVisible(true);
         scatterXAxis.setAnimated(false);
         scatterYAxis.setAnimated(false);
     }
@@ -132,14 +143,16 @@ public class MainController implements Initializable{
             SignalParameters parameters = buildParameters(selectedType);
             List<Sample> samples = signalManager.generateSignalSamples(selectedType, parameters);
 
+            String signalName = generateUniqueName(selectedType.name().toLowerCase());
+
             currentSignalData = new SignalData(
-                    "currentSignal",
+                    signalName,
                     selectedType,
                     parameters,
                     samples
             );
 
-            signalNameInputField.setText(selectedType.name().toLowerCase());
+            signalManager.addLoadedSignal(currentSignalData);
 
             if (isDiscreteSignal(selectedType)) {
                 drawScatterSamples(samples, selectedType.getName());
@@ -149,10 +162,31 @@ public class MainController implements Initializable{
 
             updateStatistics(currentSignalData);
             drawHistogram(currentSignalData);
+
+            refreshLoadedSignalsList();
+            loadedSignalsListView.getSelectionModel().select(signalName);
+            showSignalDataAsText(currentSignalData);
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd danych", e.getMessage());
         }
 
+    }
+
+    private String buildOperationResultName(SignalOperationType operationType, String name1, String name2) {
+        String abbrev1 = name1.length() > 4 ? name1.substring(0, 4) : name1;
+        String abbrev2 = name2.length() > 4 ? name2.substring(0, 4) : name2;
+        return operationType.getName() + "_" + abbrev1 + "_" + abbrev2;
+    }
+
+    private String generateUniqueName(String base) {
+        if (signalManager.getLoadedSignal(base) == null) {
+            return base;
+        }
+        int counter = 2;
+        while (signalManager.getLoadedSignal(base + "_" + counter) != null) {
+            counter++;
+        }
+        return base + "_" + counter;
     }
 
     @FXML
@@ -163,21 +197,18 @@ public class MainController implements Initializable{
         }
 
         try {
-            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
-
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Zapisz sygnał binarnie");
             fileChooser.getExtensionFilters().add(
                     new FileChooser.ExtensionFilter("Pliki binarne", "*.bin")
             );
-            fileChooser.setInitialFileName(signalName + ".bin");
+            fileChooser.setInitialFileName(currentSignalData.getName() + ".bin");
 
             File file = fileChooser.showSaveDialog(generateButton.getScene().getWindow());
             if (file == null) {
                 return;
             }
 
-            currentSignalData.setName(signalName);
             signalManager.saveSignalBinary(file.getAbsolutePath(), currentSignalData);
             Helper.showInfo("Sukces", "Sygnał zapisano do pliku binarnego.");
 
@@ -204,33 +235,13 @@ public class MainController implements Initializable{
         try {
             SignalData loaded = signalManager.loadSignalBinary(file.getAbsolutePath());
             currentSignalData = loaded;
-            signalNameInputField.setText(loaded.getName());
-            displayLoadedSignal(loaded);
+            signalManager.addLoadedSignal(loaded);
             refreshLoadedSignalsList();
+            loadedSignalsListView.getSelectionModel().select(loaded.getName());
             Helper.showInfo("Sukces", "Sygnał wczytano z pliku binarnego.");
         } catch (IOException e) {
             Helper.showError("Błąd odczytu", e.getMessage());
         }
-    }
-
-    @FXML
-    private void onShowLoadedSignalClicked() {
-        String selectedName = loadedSignalsListView.getSelectionModel().getSelectedItem();
-
-        if (selectedName == null) {
-            Helper.showError("Błąd", "Wybierz sygnał z listy.");
-            return;
-        }
-
-        SignalData signalData = signalManager.getLoadedSignal(selectedName);
-        if (signalData == null) {
-            Helper.showError("Błąd", "Nie znaleziono sygnału w pamięci programu.");
-            return;
-        }
-
-        currentSignalData = signalData;
-        signalNameInputField.setText(signalData.getName());
-        displayLoadedSignal(signalData);
     }
 
     @FXML
@@ -269,39 +280,11 @@ public class MainController implements Initializable{
     }
 
     @FXML
-    private void onAddToLoadedSignalsClicked() {
-        if (currentSignalData == null) {
-            Helper.showError("Błąd", "Brak wygenerowanego sygnału do dodania.");
-            return;
-        }
-
-        try {
-            String signalName = Helper.getStringFromField(signalNameInputField, "Nazwa sygnału");
-
-            if (signalManager.getLoadedSignal(signalName) != null) {
-                Helper.showError("Błąd", "Sygnał o tej nazwie już istnieje na liście.");
-                return;
-            }
-
-            currentSignalData.setName(signalName);
-            signalManager.addLoadedSignal(currentSignalData);
-            refreshLoadedSignalsList();
-            loadedSignalsListView.getSelectionModel().select(signalName);
-
-            Helper.showInfo("Sukces", "Sygnał dodano do listy.");
-
-        } catch (IllegalArgumentException e) {
-            Helper.showError("Błąd", e.getMessage());
-        }
-    }
-
-    @FXML
     private void onPerformSignalOperationClicked() {
         try {
             String signal1Name = operationSignal1ComboBox.getValue();
             String signal2Name = operationSignal2ComboBox.getValue();
             SignalOperationType operationType = signalOperationTypeComboBox.getValue();
-            String resultName = Helper.getStringFromField(operationResultNameField, "Nazwa wyniku");
 
             if (signal1Name == null || signal2Name == null) {
                 Helper.showError("Błąd", "Wybierz oba sygnały.");
@@ -313,10 +296,7 @@ public class MainController implements Initializable{
                 return;
             }
 
-            if (signalManager.getLoadedSignal(resultName) != null) {
-                Helper.showError("Błąd", "Sygnał o takiej nazwie już istnieje.");
-                return;
-            }
+            String resultName = generateUniqueName(buildOperationResultName(operationType, signal1Name, signal2Name));
 
             SignalData signal1 = signalManager.getLoadedSignal(signal1Name);
             SignalData signal2 = signalManager.getLoadedSignal(signal2Name);
@@ -332,10 +312,12 @@ public class MainController implements Initializable{
             SignalParameters resultParams = new SignalParameters();
             resultParams.setStartTime(signal1.getParameters().getStartTime());
             resultParams.setSamplingFrequency(signal1.getParameters().getSamplingFrequency());
+            resultParams.setPeriod(signal1.getParameters().getPeriod());
+            resultParams.setDuration(signal1.getParameters().getDuration());
 
             SignalData resultSignal = new SignalData(
                     resultName,
-                    signal1.getSignalType(),
+                    SignalType.OPERATION_RESULT,
                     resultParams,
                     resultSamples
             );
@@ -345,9 +327,6 @@ public class MainController implements Initializable{
 
             refreshLoadedSignalsList();
             loadedSignalsListView.getSelectionModel().select(resultName);
-            displayLoadedSignal(resultSignal);
-
-            signalNameInputField.setText(resultName);
 
             Helper.showInfo("Sukces", "Operację wykonano poprawnie.");
 
@@ -368,8 +347,18 @@ public class MainController implements Initializable{
         lineSignalChart.getData().clear();
         lineSignalChart.getData().add(series);
 
+        if (!samples.isEmpty()) {
+            double startTime = samples.get(0).getTime();
+            double endTime = samples.get(samples.size() - 1).getTime();
+            double range = endTime - startTime;
+            lineXAxis.setAutoRanging(false);
+            lineXAxis.setLowerBound(startTime - 0.5);
+            lineXAxis.setUpperBound(endTime + 0.5);
+            lineXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+        }
+
         if (series.getNode() != null) {
-            series.getNode().setStyle("-fx-stroke-width: 2px;"); // kolor i grubosc serii po jej dodaniu
+            series.getNode().setStyle("-fx-stroke: rgba(232, 69, 60, 0.8); -fx-stroke-width: 2px;");
         }
     }
 
@@ -385,12 +374,22 @@ public class MainController implements Initializable{
         scatterSignalChart.getData().clear();
         scatterSignalChart.getData().add(series);
 
+        if (!samples.isEmpty()) {
+            double startTime = samples.get(0).getTime();
+            double endTime = samples.get(samples.size() - 1).getTime();
+            double range = endTime - startTime;
+            scatterXAxis.setAutoRanging(false);
+            scatterXAxis.setLowerBound(startTime - 0.5);
+            scatterXAxis.setUpperBound(endTime + 0.5);
+            scatterXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+        }
+
         for (XYChart.Data<Number, Number> data : series.getData()) {
             if (data.getNode() != null) {
                 data.getNode().setStyle(
-                        "-fx-background-color: red, red;" +
-                                "-fx-background-radius: 4px;" +
-                                "-fx-padding: 2px;"
+                        "-fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);" +
+                        "-fx-background-radius: 4px;" +
+                        "-fx-padding: 2px;"
                 );
             }
         }
@@ -582,6 +581,12 @@ public class MainController implements Initializable{
 
         histogramChart.getData().clear();
         histogramChart.getData().add(series);
+
+        for (XYChart.Data<String, Number> data : series.getData()) {
+            if (data.getNode() != null) {
+                data.getNode().setStyle("-fx-bar-fill: #E8453C;");
+            }
+        }
     }
 
     private void clearFieldStyles() {

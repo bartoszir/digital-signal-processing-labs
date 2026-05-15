@@ -12,7 +12,8 @@ public enum SignalType {
     TRIANGULAR_SIGNAL("sygnał trójkątny"),
     UNIT_JUMP_SIGNAL("skok jednostkowy"),
     UNIT_IMPULSE_SIGNAL("impuls jednostkowy"),
-    IMPULSE_NOISE_SIGNAL("szum impulsowy");
+    IMPULSE_NOISE_SIGNAL("szum impulsowy"),
+    OPERATION_RESULT("wynik operacji");
 
     private final String name;
 
