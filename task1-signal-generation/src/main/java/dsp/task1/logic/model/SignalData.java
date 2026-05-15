@@ -1,4 +1,4 @@
-package dsp.task1.logic;
+package dsp.task1.logic.model;
 
 import dsp.task1.logic.signal.SignalType;
 

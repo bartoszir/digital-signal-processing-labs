@@ -1,5 +1,6 @@
-package dsp.task1.logic;
+package dsp.task1.logic.service;
 
+import dsp.task1.logic.model.Sample;
 import dsp.task1.logic.signal.Signal;
 import dsp.task1.logic.signal.ContinuousSignal;
 import dsp.task1.logic.signal.DiscreteSignal;

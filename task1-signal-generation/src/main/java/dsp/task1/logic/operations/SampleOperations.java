@@ -1,6 +1,6 @@
 package dsp.task1.logic.operations;
 
-import dsp.task1.logic.Sample;
+import dsp.task1.logic.model.Sample;
 
 import java.util.ArrayList;
 import java.util.List;

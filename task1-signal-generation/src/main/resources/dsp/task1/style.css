@@ -163,6 +163,11 @@
     -fx-background-color: #3C3C3C;
 }
 
+#fileContentTextArea {
+    -fx-font-family: "Courier New", monospace;
+    -fx-font-size: 12px;
+}
+
 /* ===== SEPARATOR ===== */
 .separator .line {
     -fx-border-color: #555555;
@@ -269,10 +274,10 @@
 
 /* ===== BAR CHART (histogram) ===== */
 .bar-chart .default-color0.chart-bar {
-    -fx-bar-fill: #E8453C;
+    -fx-bar-fill: rgba(232, 69, 60, 0.8);
 }
 .bar-chart .default-color0.chart-bar:hover {
-    -fx-bar-fill: #C0392B;
+    -fx-bar-fill: rgba(232, 69, 60, 0.6);
 }
 
 /* ===== SCATTER CHART ===== */

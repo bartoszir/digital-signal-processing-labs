@@ -1,4 +1,4 @@
-package dsp.task1.logic;
+package dsp.task1.logic.model;
 
 public class HistogramBin {
     private final String label;
