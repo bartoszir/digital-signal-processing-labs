@@ -1,24 +1,15 @@
-package dsp.task1.logic;
+package dsp.task1.logic.service;
 
-import dsp.task1.logic.signal.SignalType;
+import dsp.task1.logic.model.HistogramBin;
+import dsp.task1.logic.model.Sample;
+import dsp.task1.logic.model.SignalData;
+import dsp.task1.logic.model.SignalParameters;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SignalHistogram {
     private static final double EPS = 1e-9;
-
-    private static boolean isPeriodic(SignalType type) {
-        return switch (type) {
-            case SINUSOIDAL_SIGNAL,
-                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
-                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
-                 RECTANGULAR_SIGNAL,
-                 SYMMETRIC_RECTANGULAR_SIGNAL,
-                 TRIANGULAR_SIGNAL -> true;
-            default -> false;
-        };
-    }
 
     private static int getValidSampleCount(SignalData signalData) {
         List<Sample> samples = signalData.getSamples();
@@ -27,7 +18,7 @@ public class SignalHistogram {
             return 0;
         }
 
-        if (!isPeriodic(signalData.getSignalType())) {
+        if (!signalData.getSignalType().isPeriodic()) {
             return samples.size();
         }
 

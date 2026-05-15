@@ -1,8 +1,8 @@
 package dsp.task1.logic.io;
 
-import dsp.task1.logic.Sample;
-import dsp.task1.logic.SignalData;
-import dsp.task1.logic.SignalParameters;
+import dsp.task1.logic.model.Sample;
+import dsp.task1.logic.model.SignalData;
+import dsp.task1.logic.model.SignalParameters;
 import dsp.task1.logic.signal.SignalType;
 
 import java.io.*;

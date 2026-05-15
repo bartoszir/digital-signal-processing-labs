@@ -25,6 +25,18 @@ public enum SignalType {
         return name;
     }
 
+    public boolean isPeriodic() {
+        return switch (this) {
+            case SINUSOIDAL_SIGNAL,
+                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
+                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
+                 RECTANGULAR_SIGNAL,
+                 SYMMETRIC_RECTANGULAR_SIGNAL,
+                 TRIANGULAR_SIGNAL -> true;
+            default -> false;
+        };
+    }
+
     @Override
     public String toString() {
         return name;

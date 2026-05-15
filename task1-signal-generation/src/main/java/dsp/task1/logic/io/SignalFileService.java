@@ -1,6 +1,6 @@
 package dsp.task1.logic.io;
 
-import dsp.task1.logic.SignalData;
+import dsp.task1.logic.model.SignalData;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package dsp.task1.logic;
+package dsp.task1.logic.model;
 
 /**
  * Klasa reprezentująca pojedynczą próbkę sygnału, zawierająca czas i wartość sygnału w tym czasie.

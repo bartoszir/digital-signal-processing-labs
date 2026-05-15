@@ -1,6 +1,9 @@
-package dsp.task1.logic;
+package dsp.task1.logic.service;
 
 import dsp.task1.logic.io.BinarySignalFileService;
+import dsp.task1.logic.model.Sample;
+import dsp.task1.logic.model.SignalData;
+import dsp.task1.logic.model.SignalParameters;
 import dsp.task1.logic.signal.*;
 
 import java.io.IOException;

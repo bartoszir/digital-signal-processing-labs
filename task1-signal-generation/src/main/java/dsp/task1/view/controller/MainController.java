@@ -1,11 +1,16 @@
 package dsp.task1.view.controller;
 
-import dsp.task1.logic.*;
+import dsp.task1.logic.model.Sample;
+import dsp.task1.logic.model.SignalData;
+import dsp.task1.logic.model.SignalParameters;
 import dsp.task1.logic.operations.SampleOperations;
 import dsp.task1.logic.operations.SignalOperationType;
+import dsp.task1.logic.service.SignalManager;
 import dsp.task1.logic.signal.SignalType;
-
+import dsp.task1.view.utils.ChartService;
 import dsp.task1.view.utils.Helper;
+import dsp.task1.view.utils.SignalFormService;
+import dsp.task1.view.utils.StatisticsDisplayService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
@@ -17,16 +22,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static dsp.task1.view.utils.Helper.getDoubleFromField;
-import static dsp.task1.view.utils.Helper.getIntFromField;
-
-public class MainController implements Initializable{
+public class MainController implements Initializable {
 
     /*------------------- Parameter Panes -------------------*/
-    // rozne pola parametrow wyswietlane w zaleznosci od wybranego sygnalu
     @FXML private ComboBox<SignalType> signalTypeComboBox;
     @FXML private GridPane periodParamsPane;
     @FXML private GridPane rectangularParamsPane;
@@ -35,7 +37,6 @@ public class MainController implements Initializable{
     @FXML private GridPane impulseNoiseParamsPane;
 
     /*------------------- Parameters Input Fields -------------------*/
-    // parametry sygnalu (domyslne wartosci ustawiane automatycznie)
     @FXML private TextField amplitudeInputField;
     @FXML private TextField startTimeInputField;
     @FXML private TextField durationInputField;
@@ -61,17 +62,15 @@ public class MainController implements Initializable{
     @FXML private Spinner<Integer> histogramBinsSpinner;
 
     /*------------------- Signal Chart -------------------*/
-    // wykres sygnału
     @FXML private LineChart<Number, Number> lineSignalChart;
     @FXML private NumberAxis lineXAxis;
     @FXML private NumberAxis lineYAxis;
-
-    @FXML private javafx.scene.chart.ScatterChart<Number, Number> scatterSignalChart;
+    @FXML private ScatterChart<Number, Number> scatterSignalChart;
     @FXML private NumberAxis scatterXAxis;
     @FXML private NumberAxis scatterYAxis;
 
     /*------------------- Zapis/Odczyt -------------------*/
-    @FXML private javafx.scene.control.ListView<String> loadedSignalsListView;
+    @FXML private ListView<String> loadedSignalsListView;
     @FXML private TextArea fileContentTextArea;
 
     /*------------------- Operacje na sygnałach -------------------*/
@@ -82,17 +81,44 @@ public class MainController implements Initializable{
 
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
+
     private final SignalManager signalManager = new SignalManager();
-    private SignalData currentSignalData; // ostatnio wygenerowany SignalData
+    private SignalData currentSignalData;
 
-
+    private ChartService chartService;
+    private StatisticsDisplayService statisticsDisplayService;
+    private SignalFormService signalFormService;
 
     /*========================= METHODS =========================*/
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        signalTypeComboBox.getItems().setAll(SignalType.values());
-        signalTypeComboBox.setOnAction(actionEvent -> updateSpecificParamsVisibility());
+        chartService = new ChartService(
+                lineSignalChart, lineXAxis, lineYAxis,
+                scatterSignalChart, scatterXAxis, scatterYAxis,
+                histogramChart, histogramBinsSpinner
+        );
+
+        statisticsDisplayService = new StatisticsDisplayService(
+                meanValueLabel, meanAbsValueLabel, rmsValueLabel,
+                varianceValueLabel, averagePowerValueLabel
+        );
+
+        signalFormService = new SignalFormService(
+                signalTypeComboBox,
+                amplitudeInputField, startTimeInputField, durationInputField, samplingFrequencyInputField,
+                periodInputField, periodRectangularInputField, kwInputField,
+                tsInputField, nsInputField, pInputField,
+                periodParamsPane, rectangularParamsPane, jumpParamsPane,
+                unitImpulseParamsPane, impulseNoiseParamsPane
+        );
+
+        signalTypeComboBox.getItems().setAll(
+            Arrays.stream(SignalType.values())
+                .filter(type -> type != SignalType.OPERATION_RESULT)
+                .toList()
+        );  
+        signalTypeComboBox.setOnAction(e -> signalFormService.updateSpecificParamsVisibility());
 
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 20, 10, 5);
         valueFactory.setValue(10);
@@ -102,7 +128,7 @@ public class MainController implements Initializable{
         histogramXAxis.setLabel("Przedziały wartości");
         histogramYAxis.setLabel("Liczba próbek");
 
-        setDefaultValues();
+        signalFormService.setDefaultValues();
         refreshLoadedSignalsList();
 
         loadedSignalsListView.getSelectionModel().selectedItemProperty().addListener(
@@ -134,34 +160,27 @@ public class MainController implements Initializable{
     @FXML
     private void onGenerateSignalClicked() {
         try {
-            clearFieldStyles();
+            signalFormService.clearFieldStyles();
             SignalType selectedType = signalTypeComboBox.getValue();
             if (selectedType == null) {
                 return;
             }
 
-            SignalParameters parameters = buildParameters(selectedType);
+            SignalParameters parameters = signalFormService.buildParameters(selectedType);
             List<Sample> samples = signalManager.generateSignalSamples(selectedType, parameters);
 
             String signalName = generateUniqueName(selectedType.name().toLowerCase());
-
-            currentSignalData = new SignalData(
-                    signalName,
-                    selectedType,
-                    parameters,
-                    samples
-            );
-
+            currentSignalData = new SignalData(signalName, selectedType, parameters, samples);
             signalManager.addLoadedSignal(currentSignalData);
 
             if (isDiscreteSignal(selectedType)) {
-                drawScatterSamples(samples, selectedType.getName());
+                chartService.drawScatterSamples(samples, selectedType.getName());
             } else {
-                drawLineSamples(samples, selectedType.getName());
+                chartService.drawLineSamples(samples, selectedType.getName());
             }
 
-            updateStatistics(currentSignalData);
-            drawHistogram(currentSignalData);
+            statisticsDisplayService.updateStatistics(currentSignalData);
+            chartService.drawHistogram(currentSignalData);
 
             refreshLoadedSignalsList();
             loadedSignalsListView.getSelectionModel().select(signalName);
@@ -169,24 +188,6 @@ public class MainController implements Initializable{
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd danych", e.getMessage());
         }
-
-    }
-
-    private String buildOperationResultName(SignalOperationType operationType, String name1, String name2) {
-        String abbrev1 = name1.length() > 4 ? name1.substring(0, 4) : name1;
-        String abbrev2 = name2.length() > 4 ? name2.substring(0, 4) : name2;
-        return operationType.getName() + "_" + abbrev1 + "_" + abbrev2;
-    }
-
-    private String generateUniqueName(String base) {
-        if (signalManager.getLoadedSignal(base) == null) {
-            return base;
-        }
-        int counter = 2;
-        while (signalManager.getLoadedSignal(base + "_" + counter) != null) {
-            counter++;
-        }
-        return base + "_" + counter;
     }
 
     @FXML
@@ -211,7 +212,6 @@ public class MainController implements Initializable{
 
             signalManager.saveSignalBinary(file.getAbsolutePath(), currentSignalData);
             Helper.showInfo("Sukces", "Sygnał zapisano do pliku binarnego.");
-
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd", e.getMessage());
         } catch (IOException e) {
@@ -256,7 +256,6 @@ public class MainController implements Initializable{
 
         signalManager.removeLoadedSignal(selectedName);
 
-        // jeśli usunięty był aktualnie wyświetlany sygnał
         if (currentSignalData != null && selectedName.equals(currentSignalData.getName())) {
             currentSignalData = null;
 
@@ -266,16 +265,10 @@ public class MainController implements Initializable{
                 lineSignalChart.getData().clear();
             }
             histogramChart.getData().clear();
-
         }
 
         refreshLoadedSignalsList();
-        meanValueLabel.setText("-");
-        meanAbsValueLabel.setText("-");
-        rmsValueLabel.setText("-");
-        varianceValueLabel.setText("-");
-        averagePowerValueLabel.setText("-");
-
+        statisticsDisplayService.clearStatistics();
         Helper.showInfo("Sukces", "Sygnał został usunięty.");
     }
 
@@ -329,277 +322,9 @@ public class MainController implements Initializable{
             loadedSignalsListView.getSelectionModel().select(resultName);
 
             Helper.showInfo("Sukces", "Operację wykonano poprawnie.");
-
         } catch (IllegalArgumentException e) {
             Helper.showError("Błąd", e.getMessage());
         }
-    }
-
-    private void drawLineSamples(List<Sample> samples, String seriesName) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(seriesName);
-
-        for (Sample sample : samples) {
-            series.getData().add(new XYChart.Data<>(sample.getTime(), sample.getValue()));
-        }
-
-        showLineChart();
-        lineSignalChart.getData().clear();
-        lineSignalChart.getData().add(series);
-
-        if (!samples.isEmpty()) {
-            double startTime = samples.get(0).getTime();
-            double endTime = samples.get(samples.size() - 1).getTime();
-            double range = endTime - startTime;
-            lineXAxis.setAutoRanging(false);
-            lineXAxis.setLowerBound(startTime - 0.5);
-            lineXAxis.setUpperBound(endTime + 0.5);
-            lineXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
-        }
-
-        if (series.getNode() != null) {
-            series.getNode().setStyle("-fx-stroke: rgba(232, 69, 60, 0.8); -fx-stroke-width: 2px;");
-        }
-    }
-
-    private void drawScatterSamples(List<Sample> samples, String seriesName) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(seriesName);
-
-        for (Sample sample : samples) {
-            series.getData().add(new XYChart.Data<>(sample.getTime(), sample.getValue()));
-        }
-
-        showScatterChart();
-        scatterSignalChart.getData().clear();
-        scatterSignalChart.getData().add(series);
-
-        if (!samples.isEmpty()) {
-            double startTime = samples.get(0).getTime();
-            double endTime = samples.get(samples.size() - 1).getTime();
-            double range = endTime - startTime;
-            scatterXAxis.setAutoRanging(false);
-            scatterXAxis.setLowerBound(startTime - 0.5);
-            scatterXAxis.setUpperBound(endTime + 0.5);
-            scatterXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
-        }
-
-        for (XYChart.Data<Number, Number> data : series.getData()) {
-            if (data.getNode() != null) {
-                data.getNode().setStyle(
-                        "-fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);" +
-                        "-fx-background-radius: 4px;" +
-                        "-fx-padding: 2px;"
-                );
-            }
-        }
-    }
-
-    private void updateSpecificParamsVisibility() {
-        hideAllSpecificParamBoxes();
-
-        SignalType selectedType = signalTypeComboBox.getValue();
-        if (selectedType == null) {
-            return;
-        }
-
-        switch (selectedType) {
-            case SINUSOIDAL_SIGNAL,
-                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
-                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL -> showBox(periodParamsPane);
-
-            case RECTANGULAR_SIGNAL,
-                 SYMMETRIC_RECTANGULAR_SIGNAL,
-                 TRIANGULAR_SIGNAL -> showBox(rectangularParamsPane);
-
-            case UNIT_JUMP_SIGNAL -> showBox(jumpParamsPane);
-
-            case UNIT_IMPULSE_SIGNAL -> showBox(unitImpulseParamsPane);
-
-            case IMPULSE_NOISE_SIGNAL -> showBox(impulseNoiseParamsPane);
-
-            case UNIFORM_NOISE,
-                 GAUSSIAN_NOISE -> {
-                // brak dodatkowych parametrów
-            }
-        }
-    }
-
-    private void hideAllSpecificParamBoxes() {
-        hidePane(periodParamsPane);
-        hidePane(rectangularParamsPane);
-        hidePane(jumpParamsPane);
-        hidePane(unitImpulseParamsPane);
-        hidePane(impulseNoiseParamsPane);
-    }
-
-    private void showBox(GridPane pane) {
-        pane.setVisible(true);
-        pane.setManaged(true);
-    }
-
-    private void hidePane(GridPane pane) {
-        pane.setVisible(false);
-        pane.setManaged(false);
-    }
-
-    private void setDefaultValues() {
-        amplitudeInputField.setText("2.0");
-        startTimeInputField.setText("0.0");
-        durationInputField.setText("10.0");
-        samplingFrequencyInputField.setText("100.0");
-
-        periodInputField.setText("2.0");
-        periodRectangularInputField.setText("1.0");
-        kwInputField.setText("0.5");
-        tsInputField.setText("1.0");
-        nsInputField.setText("10");
-        pInputField.setText("0.1");
-
-        signalTypeComboBox.setValue(SignalType.SINUSOIDAL_SIGNAL);
-        updateSpecificParamsVisibility();
-    }
-
-    private SignalParameters buildParameters(SignalType selectedType) {
-        SignalParameters params = new SignalParameters();
-
-        // podstawowe parametry
-        double amplitude = getDoubleFromField(amplitudeInputField, "Amplituda (A)");
-        double startTime = getDoubleFromField(startTimeInputField, "Czas początkowy (t1)");
-        double duration = getDoubleFromField(durationInputField, "Czas trwania (d)");
-        double samplingFrequency = getDoubleFromField(samplingFrequencyInputField, "Częstotliwość próbkowania (f)");
-
-        Helper.validatePositive(duration, "Czas trwania sygnału (d)", durationInputField);
-        Helper.validatePositive(samplingFrequency, "Częstotliwość próbkowania (f)", samplingFrequencyInputField);
-
-        params.setAmplitude(amplitude);
-        params.setStartTime(startTime);
-        params.setDuration(duration);
-        params.setSamplingFrequency(samplingFrequency);
-
-        switch (selectedType) {
-            case SINUSOIDAL_SIGNAL,
-                 ONE_HALF_RECTIFIED_SINUSOIDAL_SIGNAL,
-                 TWO_HALF_RECTIFIED_SINUSOIDAL_SIGNAL -> {
-                double period = getDoubleFromField(periodInputField, "Okres podstawowy (T)");
-                Helper.validatePositive(period, "Okres podstawowy (T)", periodInputField);
-                params.setPeriod(period);
-            }
-
-            case RECTANGULAR_SIGNAL,
-                 SYMMETRIC_RECTANGULAR_SIGNAL,
-                 TRIANGULAR_SIGNAL -> {
-                double period = getDoubleFromField(periodRectangularInputField, "Okres podstawowy (T)");
-                double kw = getDoubleFromField(kwInputField, "Współczynnik wypełnienia (kw)");
-
-                Helper.validatePositive(period, "Okres podstawowy (T)", periodRectangularInputField);
-                Helper.validateKw(kw, "Współczynnik wypełnienia (kw)", kwInputField);
-
-                params.setPeriod(period);
-                params.setKw(kw);
-            }
-
-            case UNIT_JUMP_SIGNAL -> {
-                double ts = getDoubleFromField(tsInputField, "Czas skoku (ts)");
-                params.setTs(ts);
-            }
-
-            case UNIT_IMPULSE_SIGNAL -> {
-                int ns = getIntFromField(nsInputField, "Numer próbki skoku (ns)");
-                Helper.validateNonNegative(ns, "Numer próbki skoku (ns)", nsInputField);
-                params.setNs(ns);
-            }
-
-            case IMPULSE_NOISE_SIGNAL -> {
-                double p = getDoubleFromField(pInputField, "Prawdopodobieństwo (p)");
-                Helper.validateProbability(p, "Prawdopodobieństwo (p)", pInputField);
-                params.setP(p);
-            }
-
-            case UNIFORM_NOISE, GAUSSIAN_NOISE -> {
-            }
-        }
-
-        return params;
-    }
-
-    private void showLineChart() {
-        lineSignalChart.setVisible(true);
-        lineSignalChart.setManaged(true);
-
-        scatterSignalChart.setVisible(false);
-        scatterSignalChart.setManaged(false);
-    }
-
-    private void showScatterChart() {
-        scatterSignalChart.setVisible(true);
-        scatterSignalChart.setManaged(true);
-
-        lineSignalChart.setVisible(false);
-        lineSignalChart.setManaged(false);
-    }
-
-    private boolean isDiscreteSignal(SignalType type) {
-        return switch (type) {
-            case UNIT_IMPULSE_SIGNAL, IMPULSE_NOISE_SIGNAL -> true;
-            default -> false;
-        };
-    }
-
-    private void updateStatistics(SignalData signalData) {
-        double mean = SignalStatistics.mean(signalData);
-        double meanAbs = SignalStatistics.meanAbsoluteValue(signalData);
-        double rms = SignalStatistics.rms(signalData);
-        double variance = SignalStatistics.variance(signalData);
-        double avgPower = SignalStatistics.averagePower(signalData);
-
-        meanValueLabel.setText(format(mean));
-        meanAbsValueLabel.setText(format(meanAbs));
-        rmsValueLabel.setText(format(rms));
-        varianceValueLabel.setText(format(variance));
-        averagePowerValueLabel.setText(format(avgPower));
-    }
-
-    private String format(double value) {
-        return String.format("%.4f", value);
-    }
-
-    private void drawHistogram(SignalData signalData) {
-        Integer binsCount = histogramBinsSpinner.getValue();
-        if (binsCount == null) {
-            binsCount = 10;
-        }
-
-        List<HistogramBin> bins = SignalHistogram.generate(signalData, binsCount);
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Histogram");
-
-        for (HistogramBin bin : bins) {
-            series.getData().add(new XYChart.Data<>(bin.getLabel(), bin.getCount()));
-        }
-
-        histogramChart.getData().clear();
-        histogramChart.getData().add(series);
-
-        for (XYChart.Data<String, Number> data : series.getData()) {
-            if (data.getNode() != null) {
-                data.getNode().setStyle("-fx-bar-fill: #E8453C;");
-            }
-        }
-    }
-
-    private void clearFieldStyles() {
-        amplitudeInputField.setStyle("");
-        startTimeInputField.setStyle("");
-        durationInputField.setStyle("");
-        samplingFrequencyInputField.setStyle("");
-        periodInputField.setStyle("");
-        periodRectangularInputField.setStyle("");
-        kwInputField.setStyle("");
-        tsInputField.setStyle("");
-        nsInputField.setStyle("");
-        pInputField.setStyle("");
     }
 
     private void displayLoadedSignal(SignalData signalData) {
@@ -607,24 +332,19 @@ public class MainController implements Initializable{
         SignalType type = signalData.getSignalType();
 
         if (isDiscreteSignal(type)) {
-            drawScatterSamples(samples, signalData.getName());
+            chartService.drawScatterSamples(samples, signalData.getName());
         } else {
-            drawLineSamples(samples, signalData.getName());
+            chartService.drawLineSamples(samples, signalData.getName());
         }
 
-        updateStatistics(currentSignalData);
-        drawHistogram(currentSignalData);
+        statisticsDisplayService.updateStatistics(currentSignalData);
+        chartService.drawHistogram(currentSignalData);
         showSignalDataAsText(signalData);
     }
 
     private void refreshLoadedSignalsList() {
-//        loadedSignalsListView.getItems().setAll(signalManager.getLoadedSignals().keySet());
         List<String> names = new ArrayList<>(signalManager.getLoadedSignals().keySet());
-
-        // ListView
         loadedSignalsListView.getItems().setAll(names);
-
-        // ComboBoxy do operacji na sygnalach
         refreshOperationSignalSelectors(names);
     }
 
@@ -660,29 +380,56 @@ public class MainController implements Initializable{
 
     private void showSignalDataAsText(SignalData signalData) {
         StringBuilder sb = new StringBuilder();
-
-        sb.append("Nazwa: ").append(signalData.getName()).append("\n");
-        sb.append("Typ: ").append(signalData.getSignalType()).append("\n");
-
         SignalParameters params = signalData.getParameters();
-        sb.append("Czas początkowy: ").append(params.getStartTime()).append("\n");
-//        sb.append("Czas trwania: ").append(params.getDuration()).append("\n");
-        sb.append("Okres podstawowy: ").append(params.getPeriod()).append("\n");
-        sb.append("Częstotliwość próbkowania: ").append(params.getSamplingFrequency()).append("\n");
-        sb.append("Rodzaj wartości: rzeczywiste").append("\n");
-        sb.append("Liczba próbek: ").append(signalData.getSamples().size()).append("\n");
+
+        sb.append(String.format("%-18s%s%n", "Nazwa:", signalData.getName()));
+        sb.append(String.format("%-18s%s%n", "Typ:", signalData.getSignalType()));
+        sb.append(String.format("%-18s%.4f s%n", "t1:", params.getStartTime()));
+
+        // okres tylko jeśli sygnał jest okresowy (nie OPERATION_RESULT, nie szumy itp.)
+        if (signalData.getSignalType().isPeriodic()) {
+            sb.append(String.format("%-18s%.4f s%n", "T:", params.getPeriod()));
+        }
+
+        sb.append(String.format("%-18s%.2f Hz%n", "fs:", params.getSamplingFrequency()));
+        sb.append(String.format("%-18s%s%n", "Rodzaj wartości:", "rzeczywiste"));
+        sb.append(String.format("%-18s%d%n", "Liczba próbek:", signalData.getSamples().size()));
         sb.append("\n");
 
-        sb.append("Próbki:\n");
-        sb.append("time\tvalue\n");
+        sb.append(String.format("%-12s%s%n", "Próbki:", ""));
+        sb.append(String.format("%10s  %12s%n", "t [s]", "x(t)"));
+        sb.append("─".repeat(46)).append("\n");
 
         for (Sample sample : signalData.getSamples()) {
-            sb.append(sample.getTime())
-                    .append("\t")
-                    .append(sample.getValue())
-                    .append("\n");
+            sb.append(String.format("%10.4f  %12.6f%n",
+                    sample.getTime(),
+                    sample.getValue()));
         }
 
         fileContentTextArea.setText(sb.toString());
+    }
+
+    private String buildOperationResultName(SignalOperationType operationType, String name1, String name2) {
+        String abbrev1 = name1.length() > 4 ? name1.substring(0, 4) : name1;
+        String abbrev2 = name2.length() > 4 ? name2.substring(0, 4) : name2;
+        return operationType.getName() + "_" + abbrev1 + "_" + abbrev2;
+    }
+
+    private String generateUniqueName(String base) {
+        if (signalManager.getLoadedSignal(base) == null) {
+            return base;
+        }
+        int counter = 2;
+        while (signalManager.getLoadedSignal(base + "_" + counter) != null) {
+            counter++;
+        }
+        return base + "_" + counter;
+    }
+
+    private boolean isDiscreteSignal(SignalType type) {
+        return switch (type) {
+            case UNIT_IMPULSE_SIGNAL, IMPULSE_NOISE_SIGNAL -> true;
+            default -> false;
+        };
     }
 }
