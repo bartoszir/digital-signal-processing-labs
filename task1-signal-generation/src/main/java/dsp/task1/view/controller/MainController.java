@@ -1,5 +1,6 @@
 package dsp.task1.view.controller;
 
+import dsp.task1.logic.model.ConversionSession;
 import dsp.task1.logic.model.Sample;
 import dsp.task1.logic.model.SignalData;
 import dsp.task1.logic.model.SignalParameters;
@@ -17,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -80,16 +82,47 @@ public class MainController implements Initializable {
     @FXML private ComboBox<SignalOperationType> signalOperationTypeComboBox;
     @FXML private Button performOperationButton;
 
+    /*------------------- Conversion Tab — Left Panel -------------------*/
+    @FXML private ComboBox<String> conversionInputSignalComboBox;
+    @FXML private TextField conversionSamplingFrequencyField;
+    @FXML private Button sampleButton;
+    @FXML private TextField conversionBitsField;
+    @FXML private ComboBox<String> quantizationMethodComboBox;
+    @FXML private Button quantizeButton;
+    @FXML private ComboBox<String> reconstructionMethodComboBox;
+    @FXML private VBox sincParamsBox;
+    @FXML private TextField sincLeftSamplesField;
+    @FXML private TextField sincRightSamplesField;
+    @FXML private Button reconstructButton;
+
+    /*------------------- Conversion Tab — Right Panel -------------------*/
+    @FXML private CheckBox conversionShowOriginalCheckBox;
+    @FXML private CheckBox conversionShowSampledCheckBox;
+    @FXML private CheckBox conversionShowReconstructedCheckBox;
+    @FXML private LineChart<Number, Number> conversionLineChart;
+    @FXML private NumberAxis conversionXAxis;
+    @FXML private NumberAxis conversionYAxis;
+    @FXML private Label mseSamplingLabel;
+    @FXML private Label mseQuantizationLabel;
+    @FXML private Label snrSamplingLabel;
+    @FXML private Label snrQuantizationLabel;
+    @FXML private Label psnrSamplingLabel;
+    @FXML private Label psnrQuantizationLabel;
+    @FXML private Label mdSamplingLabel;
+    @FXML private Label mdQuantizationLabel;
+
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
     @FXML private CheckBox showSymbolsCheckBox;
 
     private final SignalManager signalManager = new SignalManager();
     private SignalData currentSignalData;
+    private final ConversionSession conversionSession = new ConversionSession();
 
     private ChartService chartService;
     private StatisticsDisplayService statisticsDisplayService;
     private SignalFormService signalFormService;
+    private ConversionController conversionController;
 
     /*========================= METHODS =========================*/
 
@@ -114,6 +147,22 @@ public class MainController implements Initializable {
                 periodParamsPane, rectangularParamsPane, jumpParamsPane,
                 unitImpulseParamsPane, impulseNoiseParamsPane
         );
+
+        conversionController = new ConversionController(
+                conversionInputSignalComboBox,
+                conversionSamplingFrequencyField, sampleButton,
+                conversionBitsField, quantizationMethodComboBox, quantizeButton,
+                reconstructionMethodComboBox, sincParamsBox,
+                sincLeftSamplesField, sincRightSamplesField, reconstructButton,
+                conversionShowOriginalCheckBox, conversionShowSampledCheckBox, conversionShowReconstructedCheckBox,
+                conversionLineChart,
+                mseSamplingLabel, mseQuantizationLabel,
+                snrSamplingLabel, snrQuantizationLabel,
+                psnrSamplingLabel, psnrQuantizationLabel,
+                mdSamplingLabel, mdQuantizationLabel,
+                signalManager, conversionSession
+        );
+        conversionController.initialize();
 
         signalTypeComboBox.getItems().setAll(
             Arrays.stream(SignalType.values())
@@ -381,6 +430,11 @@ public class MainController implements Initializable {
         List<String> names = new ArrayList<>(signalManager.getLoadedSignals().keySet());
         loadedSignalsListView.getItems().setAll(names);
         refreshOperationSignalSelectors(names);
+        updateConversionSignalComboBox(names);
+    }
+
+    private void updateConversionSignalComboBox(List<String> names) {
+        conversionController.updateInputSignalComboBox(names);
     }
 
     private void refreshOperationSignalSelectors(List<String> names) {
