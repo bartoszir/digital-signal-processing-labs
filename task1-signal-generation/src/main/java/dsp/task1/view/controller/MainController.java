@@ -82,6 +82,7 @@ public class MainController implements Initializable {
 
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
+    @FXML private CheckBox showSymbolsCheckBox;
 
     private final SignalManager signalManager = new SignalManager();
     private SignalData currentSignalData;
@@ -124,6 +125,11 @@ public class MainController implements Initializable {
         SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 20, 10, 5);
         valueFactory.setValue(10);
         histogramBinsSpinner.setValueFactory(valueFactory);
+        histogramBinsSpinner.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (currentSignalData != null) {
+                chartService.drawHistogram(currentSignalData);
+            }
+        });
         histogramChart.setAnimated(false);
         histogramChart.setLegendVisible(false);
         histogramXAxis.setLabel("Przedziały wartości");
@@ -142,10 +148,13 @@ public class MainController implements Initializable {
                 }
         );
 
+        showSymbolsCheckBox.selectedProperty().addListener((obs, oldVal, selected) ->
+                lineSignalChart.setCreateSymbols(selected));
+
         signalOperationTypeComboBox.getItems().setAll(SignalOperationType.values());
 
         lineSignalChart.setAnimated(false);
-        lineSignalChart.setCreateSymbols(false);
+        lineSignalChart.setCreateSymbols(true);
         lineSignalChart.setHorizontalZeroLineVisible(true);
         lineSignalChart.setVerticalZeroLineVisible(true);
         lineXAxis.setAnimated(false);
@@ -179,6 +188,7 @@ public class MainController implements Initializable {
             } else {
                 chartService.drawLineSamples(samples, selectedType.getName());
             }
+            lineSignalChart.setCreateSymbols(showSymbolsCheckBox.isSelected());
 
             statisticsDisplayService.updateStatistics(currentSignalData);
             chartService.drawHistogram(currentSignalData);
@@ -360,6 +370,7 @@ public class MainController implements Initializable {
         } else {
             chartService.drawLineSamples(samples, signalData.getName());
         }
+        lineSignalChart.setCreateSymbols(showSymbolsCheckBox.isSelected());
 
         statisticsDisplayService.updateStatistics(currentSignalData);
         chartService.drawHistogram(currentSignalData);

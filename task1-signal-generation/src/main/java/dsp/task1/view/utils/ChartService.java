@@ -63,7 +63,7 @@ public class ChartService {
         }
 
         if (series.getNode() != null) {
-            series.getNode().setStyle("-fx-stroke: rgba(232, 69, 60, 0.8); -fx-stroke-width: 2px;");
+            series.getNode().setStyle("-fx-stroke: rgba(232, 69, 60, 0.8); -fx-stroke-width: 1px;");
         }
     }
 

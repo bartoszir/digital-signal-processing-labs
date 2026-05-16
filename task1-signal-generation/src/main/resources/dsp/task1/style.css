@@ -268,8 +268,19 @@
     -fx-stroke: rgba(232, 69, 60, 0.8);
     -fx-stroke-width: 2px;
 }
-.line-chart .chart-line-symbol {
+/* .line-chart .chart-line-symbol {
     -fx-background-color: rgba(232, 69, 60, 0.8);
+} */
+ .line-chart .chart-line-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);
+    -fx-background-radius: 2px;
+    -fx-padding: px;
+}
+
+.chart-line-symbol {
+    -fx-padding: 2px !important;
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8) !important;
+    -fx-background-radius: 2px !important;
 }
 
 /* ===== BAR CHART (histogram) ===== */

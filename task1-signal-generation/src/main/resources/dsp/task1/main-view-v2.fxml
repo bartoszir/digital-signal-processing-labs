@@ -23,6 +23,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
@@ -45,6 +46,11 @@
                   <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
                 </textFill>
               </Label>
+              <CheckBox fx:id="showSymbolsCheckBox" text="Pokaż punkty"
+                        selected="true"
+                        alignment="CENTER"
+                        maxWidth="1.7976931348623157E308"
+                        style="-fx-text-fill: #9f9f9f;" />
                 <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                   <tabs>
                     <Tab text="Generowanie">
@@ -198,7 +204,7 @@
                                     <TextArea fx:id="fileContentTextArea"
                                               editable="false"
                                               wrapText="false"
-                                              prefHeight="200.0"
+                                              prefHeight="180.0"
                                               VBox.vgrow="ALWAYS" />
 
 
