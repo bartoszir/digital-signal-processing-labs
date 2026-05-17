@@ -78,6 +78,7 @@ public class ChartService {
         showScatterChart();
         scatterSignalChart.getData().clear();
         scatterSignalChart.getData().add(series);
+        // scatterSignalChart.setLegendVisible(false);
 
         if (!samples.isEmpty()) {
             double startTime = samples.get(0).getTime();
@@ -92,8 +93,9 @@ public class ChartService {
         for (XYChart.Data<Number, Number> data : series.getData()) {
             if (data.getNode() != null) {
                 data.getNode().setStyle(
+                        "-fx-stroke: rgba(232, 69, 60, 0.8); -fx-stroke-width: 1px;" + 
                         "-fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);" +
-                        "-fx-background-radius: 4px;" +
+                        "-fx-background-radius: 2px;" +
                         "-fx-padding: 2px;"
                 );
             }

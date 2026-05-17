@@ -131,6 +131,7 @@ public class ConversionController {
         conversionChart.getData().addAll(originalSeries, sampledSeries, quantizedSeries, reconstructedSeries);
         conversionChart.setAnimated(false);
         conversionChart.setCreateSymbols(true);
+        conversionChart.getStyleClass().add("conversion-chart");
 
         inputSignalComboBox.getSelectionModel().selectedItemProperty()
             .addListener((obs, oldVal, newVal) -> {
