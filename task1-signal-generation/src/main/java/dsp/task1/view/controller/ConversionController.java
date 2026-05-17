@@ -283,9 +283,13 @@ public class ConversionController {
         double range = endTime - startTime;
         NumberAxis xAxis = (NumberAxis) conversionChart.getXAxis();
         xAxis.setAutoRanging(false);
-        xAxis.setLowerBound(startTime - 0.5);
-        xAxis.setUpperBound(endTime + 0.5);
-        xAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+        // xAxis.setLowerBound(startTime - 0.5);
+        // xAxis.setUpperBound(endTime + 0.5);
+        // xAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+        double margin = range > 1.0 ? 0.5 : range * 0.05;
+        xAxis.setLowerBound(startTime - margin);
+        xAxis.setUpperBound(endTime + margin);
+        xAxis.setTickUnit(Math.max(range / 10.0, 0.0001));
     }
 
     private void setSeriesVisible(XYChart.Series<Number, Number> series,

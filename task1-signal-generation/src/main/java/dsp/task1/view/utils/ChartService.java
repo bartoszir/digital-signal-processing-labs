@@ -57,9 +57,13 @@ public class ChartService {
             double endTime = samples.get(samples.size() - 1).getTime();
             double range = endTime - startTime;
             lineXAxis.setAutoRanging(false);
-            lineXAxis.setLowerBound(startTime - 0.5);
-            lineXAxis.setUpperBound(endTime + 0.5);
-            lineXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+            // lineXAxis.setLowerBound(startTime - 0.5);
+            // lineXAxis.setUpperBound(endTime + 0.5);
+            // lineXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+            double margin = range > 1.0 ? 0.5 : range * 0.05;
+            lineXAxis.setLowerBound(startTime - margin);
+            lineXAxis.setUpperBound(endTime + margin);
+            lineXAxis.setTickUnit(Math.max(range / 10.0, 0.0001));
         }
 
         if (series.getNode() != null) {
@@ -84,9 +88,13 @@ public class ChartService {
             double endTime = samples.get(samples.size() - 1).getTime();
             double range = endTime - startTime;
             scatterXAxis.setAutoRanging(false);
-            scatterXAxis.setLowerBound(startTime - 0.5);
-            scatterXAxis.setUpperBound(endTime + 0.5);
-            scatterXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+            // scatterXAxis.setLowerBound(startTime - 0.5);
+            // scatterXAxis.setUpperBound(endTime + 0.5);
+            // scatterXAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
+            double margin = range > 1.0 ? 0.5 : range * 0.05;
+            scatterXAxis.setLowerBound(startTime - margin);
+            scatterXAxis.setUpperBound(endTime + margin);
+            scatterXAxis.setTickUnit(Math.max(range / 10.0, 0.0001));
         }
 
         for (XYChart.Data<Number, Number> data : series.getData()) {
