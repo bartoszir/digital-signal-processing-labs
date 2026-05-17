@@ -112,6 +112,10 @@ public class MainController implements Initializable {
     @FXML private Label mdSamplingLabel;
     @FXML private Label mdQuantizationLabel;
 
+    /*------------------- Tab Panes -------------------*/
+    @FXML private TabPane leftTabPane;
+    @FXML private TabPane rightTabPane;
+
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
     @FXML private CheckBox showSymbolsCheckBox;
@@ -184,6 +188,16 @@ public class MainController implements Initializable {
         histogramChart.setLegendVisible(false);
         histogramXAxis.setLabel("Przedziały wartości");
         histogramYAxis.setLabel("Liczba próbek");
+
+        leftTabPane.getSelectionModel().selectedItemProperty()
+            .addListener((obs, oldTab, newTab) -> {
+                if (newTab != null && "Konwersja".equals(newTab.getText())) {
+                    rightTabPane.getTabs().stream()
+                        .filter(tab -> "Konwersja".equals(tab.getText()))
+                        .findFirst()
+                        .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                }
+            });
 
         signalFormService.setDefaultValues();
         refreshLoadedSignalsList();

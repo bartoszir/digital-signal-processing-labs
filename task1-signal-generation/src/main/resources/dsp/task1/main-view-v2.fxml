@@ -51,7 +51,7 @@
                         alignment="CENTER"
                         maxWidth="1.7976931348623157E308"
                         style="-fx-text-fill: #9f9f9f;" />
-                <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                <TabPane fx:id="leftTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
                   <tabs>
                     <Tab text="Generowanie">
                          <content>
@@ -341,7 +341,7 @@
         <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="545.0" prefWidth="430.0">
           <children>
             <!-- ustawione tak aby TabPane wypełniał środkowy panel -->
-            <TabPane tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TabPane fx:id="rightTabPane" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <tabs>
                 <Tab text="Wykres">
                   <content>
