@@ -243,6 +243,15 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void onResetGenerationClicked() {
+        signalFormService.setDefaultValues();
+        signalFormService.clearFieldStyles();
+        if (currentSignalData != null) {
+            displayLoadedSignal(currentSignalData);
+        }
+    }
+
+    @FXML
     private void onResetConversionClicked() {
         conversionController.reset();
     }
