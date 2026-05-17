@@ -8,18 +8,28 @@ This repository contains assignments and implementations developed as part of th
 | Task | Description |
 |------|-------------|
 | [Task 1 — Signal Generation](./task1-signal-generation) | Desktop application for generating, analyzing and operating on signals and noise |
+| [Task 2 — Sampling and Quantization](./task1-signal-generation) | A/C and C/A conversion with sampling, quantization and reconstruction |
 
-## Task 1 — Signal and Noise Generation
+## Application
 
-A JavaFX desktop application for generating and analyzing digital signals.
+Both tasks are implemented as a single JavaFX desktop application located in `task1-signal-generation/`.
 
 ### Features
+
+**Task 1 — Signal Generation**
 - Generate 11 types of signals and noise (sinusoidal, rectangular, triangular, Gaussian noise, impulse noise and more)
 - Configure signal parameters (amplitude, duration, sampling frequency, period, duty cycle etc.)
 - Visualize signals as time-domain plots and histograms
 - Compute signal statistics: mean, absolute mean, RMS, variance, average power
 - Perform arithmetic operations on signals (add, subtract, multiply, divide)
 - Save and load signals in a custom binary format (`.bin`)
+
+**Task 2 — Sampling and Quantization**
+- Uniform sampling with configurable sampling frequency
+- Uniform quantization with rounding (configurable number of bits)
+- Signal reconstruction: Zero-order hold (ZOH) and sinc interpolation
+- Signal comparison metrics: MSE, SNR, PSNR, MD
+- Aliasing demonstration
 
 ### Screenshots
 
