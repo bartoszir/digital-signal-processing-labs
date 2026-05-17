@@ -136,20 +136,20 @@ public class ConversionController {
         inputSignalComboBox.getSelectionModel().selectedItemProperty()
             .addListener((obs, oldVal, newVal) -> {
                 if (newVal != null) {
-                    conversionSession.setOriginalSignal(signalManager.getLoadedSignal(newVal));
                     conversionSession.setSampledSignal(null);
                     conversionSession.setQuantizedSignal(null);
                     conversionSession.setReconstructedSignal(null);
+                    conversionSession.setOriginalSignal(signalManager.getLoadedSignal(newVal));
+                    sampleButton.setDisable(false);
+                    quantizeButton.setDisable(true);
+                    reconstructButton.setDisable(true);
                     showOriginalCheckBox.setSelected(true);
                     showSampledCheckBox.setSelected(false);
                     showQuantizedCheckBox.setSelected(false);
                     showReconstructedCheckBox.setSelected(false);
-                    updateChart();
                     clearSamplingLabels();
                     clearQuantizationLabels();
-                    sampleButton.setDisable(false);
-                    quantizeButton.setDisable(true);
-                    reconstructButton.setDisable(true);
+                    updateChart();
                 }
             });
 
@@ -390,6 +390,39 @@ public class ConversionController {
             }
         }
         return 0.0;
+    }
+
+    public void reset() {
+        conversionSession.setOriginalSignal(null);
+        conversionSession.setSampledSignal(null);
+        conversionSession.setQuantizedSignal(null);
+        conversionSession.setReconstructedSignal(null);
+
+        inputSignalComboBox.setValue(null);
+
+        samplingFrequencyField.clear();
+        bitsField.clear();
+        sincLeftSamplesField.clear();
+        sincRightSamplesField.clear();
+
+        sampleButton.setDisable(true);
+        quantizeButton.setDisable(true);
+        reconstructButton.setDisable(true);
+
+        showOriginalCheckBox.setSelected(false);
+        showSampledCheckBox.setSelected(false);
+        showQuantizedCheckBox.setSelected(false);
+        showReconstructedCheckBox.setSelected(false);
+
+        reconstructionMethodComboBox.getSelectionModel().selectFirst();
+        quantizationMethodComboBox.getSelectionModel().selectFirst();
+
+        sincParamsBox.setVisible(false);
+        sincParamsBox.setManaged(false);
+
+        updateChart();
+        clearSamplingLabels();
+        clearQuantizationLabels();
     }
 
     public void setShowSymbols(boolean show) {

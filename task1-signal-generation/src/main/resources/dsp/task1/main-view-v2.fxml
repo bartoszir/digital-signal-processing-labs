@@ -27,6 +27,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dsp.task1.view.controller.MainController">
   <children>
     <SplitPane dividerPositions="0.3" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -251,6 +252,15 @@
                                       <Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/>
                                   </padding>
                                   <children>
+                                      <HBox alignment="CENTER_RIGHT">
+                                          <Button fx:id="resetConversionButton" text="↺"
+                                                  onAction="#onResetConversionClicked"
+                                                  style="-fx-font-size: 16px;">
+                                              <tooltip>
+                                                  <Tooltip text="Resetuj konwersję"/>
+                                              </tooltip>
+                                          </Button>
+                                      </HBox>
                                       <Label text="Sygnał wejściowy:" />
                                       <ComboBox fx:id="conversionInputSignalComboBox" prefWidth="280.0" />
 

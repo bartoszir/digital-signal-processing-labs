@@ -243,6 +243,11 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void onResetConversionClicked() {
+        conversionController.reset();
+    }
+
+    @FXML
     private void onGenerateSignalClicked() {
         try {
             signalFormService.clearFieldStyles();
