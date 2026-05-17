@@ -168,6 +168,7 @@ public class MainController implements Initializable {
                 signalManager, conversionSession
         );
         conversionController.initialize();
+        conversionController.setShowSymbols(showSymbolsCheckBox.isSelected());
 
         signalTypeComboBox.getItems().setAll(
             Arrays.stream(SignalType.values())
@@ -220,8 +221,10 @@ public class MainController implements Initializable {
                 }
         );
 
-        showSymbolsCheckBox.selectedProperty().addListener((obs, oldVal, selected) ->
-                lineSignalChart.setCreateSymbols(selected));
+        showSymbolsCheckBox.selectedProperty().addListener((obs, oldVal, selected) -> {
+            lineSignalChart.setCreateSymbols(selected);
+            conversionController.setShowSymbols(selected);
+        });
 
         signalOperationTypeComboBox.getItems().setAll(SignalOperationType.values());
 

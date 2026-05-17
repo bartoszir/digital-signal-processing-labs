@@ -392,6 +392,16 @@ public class ConversionController {
         return 0.0;
     }
 
+    public void setShowSymbols(boolean show) {
+        if (show) {
+            conversionChart.getStyleClass().remove("hide-line-symbols");
+        } else {
+            if (!conversionChart.getStyleClass().contains("hide-line-symbols")) {
+                conversionChart.getStyleClass().add("hide-line-symbols");
+            }
+        }
+    }
+
     public void updateInputSignalComboBox(List<String> signalNames) {
         String current = inputSignalComboBox.getValue();
         inputSignalComboBox.getItems().setAll(signalNames);

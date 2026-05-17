@@ -351,6 +351,27 @@
     -fx-padding: 4px !important;
 }
 
+/* ===== HIDE LINE SYMBOLS (conversion chart — only series 0 and 3) ===== */
+.hide-line-symbols .series0.chart-line-symbol {
+    -fx-padding: 0px !important;
+    -fx-background-color: transparent, transparent !important;
+}
+.hide-line-symbols .series3.chart-line-symbol {
+    -fx-padding: 0px !important;
+    -fx-background-color: transparent, transparent !important;
+}
+/* przywróć widoczność symboli w legendzie nawet gdy kropki ukryte */
+.hide-line-symbols .series0.chart-legend-item-symbol {
+    -fx-padding: 4px !important;
+    -fx-background-color: rgba(100, 149, 237, 0.7), rgba(100, 149, 237, 0.7) !important;
+    -fx-background-radius: 3px !important;
+}
+.hide-line-symbols .series3.chart-legend-item-symbol {
+    -fx-padding: 4px !important;
+    -fx-background-color: rgba(80, 200, 120, 0.7), rgba(80, 200, 120, 0.7) !important;
+    -fx-background-radius: 3px !important;
+}
+
 /* ===== BAR CHART (histogram) ===== */
 .bar-chart .default-color0.chart-bar {
     -fx-bar-fill: rgba(232, 69, 60, 0.8);

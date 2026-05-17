@@ -78,7 +78,6 @@ public class ChartService {
         showScatterChart();
         scatterSignalChart.getData().clear();
         scatterSignalChart.getData().add(series);
-        // scatterSignalChart.setLegendVisible(false);
 
         if (!samples.isEmpty()) {
             double startTime = samples.get(0).getTime();
