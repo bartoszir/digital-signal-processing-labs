@@ -3,6 +3,8 @@
     -fx-background-color: #2B2B2B;
     -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     -fx-font-size: 13px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 /* ===== LABELS ===== */

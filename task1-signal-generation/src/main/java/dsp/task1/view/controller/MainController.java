@@ -191,11 +191,19 @@ public class MainController implements Initializable {
 
         leftTabPane.getSelectionModel().selectedItemProperty()
             .addListener((obs, oldTab, newTab) -> {
-                if (newTab != null && "Konwersja".equals(newTab.getText())) {
-                    rightTabPane.getTabs().stream()
-                        .filter(tab -> "Konwersja".equals(tab.getText()))
-                        .findFirst()
-                        .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                if (newTab != null) {
+                    switch (newTab.getText()) {
+                        case "Generowanie", "Pliki", "Operacje" ->
+                            rightTabPane.getTabs().stream()
+                                .filter(tab -> "Wykres".equals(tab.getText()))
+                                .findFirst()
+                                .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                        case "Konwersja" ->
+                            rightTabPane.getTabs().stream()
+                                .filter(tab -> "Konwersja".equals(tab.getText()))
+                                .findFirst()
+                                .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                    }
                 }
             });
 

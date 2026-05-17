@@ -345,90 +345,97 @@
               <tabs>
                 <Tab text="Wykres">
                   <content>
-                    <AnchorPane>
-                      <children>
-                        <LineChart fx:id="lineSignalChart" createSymbols="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
-                          <xAxis>
-                            <NumberAxis fx:id="lineXAxis" label="czas" side="BOTTOM" />
-                          </xAxis>
-                          <yAxis>
-                            <NumberAxis fx:id="lineYAxis" label="amplituda" side="LEFT" />
-                          </yAxis>
-                        </LineChart>
+                    <TabPane tabClosingPolicy="UNAVAILABLE">
+                      <tabs>
+                        <Tab text="Wykres">
+                          <content>
+                            <AnchorPane>
+                              <children>
+                                <LineChart fx:id="lineSignalChart" createSymbols="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                  <xAxis>
+                                    <NumberAxis fx:id="lineXAxis" label="czas" side="BOTTOM" />
+                                  </xAxis>
+                                  <yAxis>
+                                    <NumberAxis fx:id="lineYAxis" label="amplituda" side="LEFT" />
+                                  </yAxis>
+                                </LineChart>
+                                <ScatterChart fx:id="scatterSignalChart" managed="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                  <xAxis>
+                                    <NumberAxis fx:id="scatterXAxis" label="czas" side="BOTTOM" />
+                                  </xAxis>
+                                  <yAxis>
+                                    <NumberAxis fx:id="scatterYAxis" label="amplituda" side="LEFT" />
+                                  </yAxis>
+                                </ScatterChart>
+                              </children>
+                            </AnchorPane>
+                          </content>
+                        </Tab>
 
-                          <ScatterChart fx:id="scatterSignalChart" managed="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
-                              <xAxis>
-                                  <NumberAxis fx:id="scatterXAxis" label="czas" side="BOTTOM" />
-                              </xAxis>
-                              <yAxis>
-                                  <NumberAxis fx:id="scatterYAxis" label="amplituda" side="LEFT" />
-                              </yAxis>
-                          </ScatterChart>
-                      </children>
-                    </AnchorPane>
-                  </content>
-                </Tab>
+                        <Tab text="Histogram">
+                          <content>
+                            <AnchorPane>
+                              <children>
+                                <VBox spacing="10" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                  <children>
+                                    <HBox alignment="CENTER" spacing="10">
+                                      <children>
+                                        <Label text="Liczba przedziałów histogramu:" />
+                                        <Spinner fx:id="histogramBinsSpinner" minWidth="80.0" prefWidth="80.0" />
+                                      </children>
+                                    </HBox>
+                                    <BarChart fx:id="histogramChart" animated="false" VBox.vgrow="ALWAYS">
+                                      <xAxis>
+                                        <CategoryAxis fx:id="histogramXAxis" side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis fx:id="histogramYAxis" side="LEFT" />
+                                      </yAxis>
+                                    </BarChart>
+                                  </children>
+                                </VBox>
+                              </children>
+                            </AnchorPane>
+                          </content>
+                        </Tab>
 
-                <Tab text="Histogram">
-                  <content>
-                    <AnchorPane>
-                      <children>
-                        <VBox spacing="10" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                           <children>
-                               <HBox alignment="CENTER" spacing="10">
-                                   <children>
-                                       <Label text="Liczba przedziałów histogramu:" />
-                                       <Spinner fx:id="histogramBinsSpinner" minWidth="80.0" prefWidth="80.0" />
-                                   </children>
-                               </HBox>
-                               <BarChart fx:id="histogramChart" animated="false" VBox.vgrow="ALWAYS">
-                                   <xAxis>
-                                       <CategoryAxis fx:id="histogramXAxis" side="BOTTOM" />
-                                   </xAxis>
-                                   <yAxis>
-                                       <NumberAxis fx:id="histogramYAxis" side="LEFT" />
-                                   </yAxis>
-                               </BarChart>
-                           </children>
-                        </VBox>
-                      </children>
-                    </AnchorPane>
-                  </content>
-                </Tab>
+                        <Tab text="Parametry">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                              <GridPane fx:id="signalStatistics" hgap="10" vgap="8" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+                                <children>
+                                  <Label text="Wartość średnia:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                  <Label fx:id="meanValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-                <Tab text="Parametry">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                      <GridPane fx:id="signalStatistics" hgap="10" vgap="8" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
-                          <children>
-                              <Label text="Wartość średnia:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                              <Label fx:id="meanValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                  <Label text="Wartość średnia bezwzględna:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                  <Label fx:id="meanAbsValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                              <Label text="Wartość średnia bezwzględna:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                              <Label fx:id="meanAbsValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                  <Label text="Wartość skuteczna:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                  <Label fx:id="rmsValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                              <Label text="Wartość skuteczna:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                              <Label fx:id="rmsValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                  <Label text="Wariancja:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                  <Label fx:id="varianceValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                              <Label text="Wariancja:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                              <Label fx:id="varianceValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-
-                              <Label text="Moc średnia:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                              <Label fx:id="averagePowerValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                          </children>
-                          <columnConstraints>
-                              <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
-                              <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                              <RowConstraints />
-                              <RowConstraints />
-                              <RowConstraints />
-                              <RowConstraints />
-                                       <RowConstraints />
-                          </rowConstraints>
-                      </GridPane>
-                    </AnchorPane>
+                                  <Label text="Moc średnia:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                  <Label fx:id="averagePowerValueLabel" prefWidth="120.0" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                </children>
+                                <columnConstraints>
+                                  <ColumnConstraints minWidth="180.0" prefWidth="180.0" />
+                                  <ColumnConstraints minWidth="120.0" prefWidth="120.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints />
+                                  <RowConstraints />
+                                  <RowConstraints />
+                                  <RowConstraints />
+                                  <RowConstraints />
+                                </rowConstraints>
+                              </GridPane>
+                            </AnchorPane>
+                          </content>
+                        </Tab>
+                      </tabs>
+                    </TabPane>
                   </content>
                 </Tab>
 
