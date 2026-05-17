@@ -443,6 +443,7 @@
                                 <Label text="Warstwy wykresu: "/>
                                 <CheckBox fx:id="conversionShowOriginalCheckBox" text="Oryginalny" selected="true" style="-fx-text-fill: #9f9f9f;"/>
                                 <CheckBox fx:id="conversionShowSampledCheckBox" text="Spróbkowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
+                                <CheckBox fx:id="conversionShowQuantizedCheckBox" text="Skwantyzowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
                                 <CheckBox fx:id="conversionShowReconstructedCheckBox" text="Zrekonstruowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
                               </children>
                             </HBox>

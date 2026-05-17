@@ -98,6 +98,7 @@ public class MainController implements Initializable {
     /*------------------- Conversion Tab — Right Panel -------------------*/
     @FXML private CheckBox conversionShowOriginalCheckBox;
     @FXML private CheckBox conversionShowSampledCheckBox;
+    @FXML private CheckBox conversionShowQuantizedCheckBox;
     @FXML private CheckBox conversionShowReconstructedCheckBox;
     @FXML private LineChart<Number, Number> conversionLineChart;
     @FXML private NumberAxis conversionXAxis;
@@ -154,7 +155,7 @@ public class MainController implements Initializable {
                 conversionBitsField, quantizationMethodComboBox, quantizeButton,
                 reconstructionMethodComboBox, sincParamsBox,
                 sincLeftSamplesField, sincRightSamplesField, reconstructButton,
-                conversionShowOriginalCheckBox, conversionShowSampledCheckBox, conversionShowReconstructedCheckBox,
+                conversionShowOriginalCheckBox, conversionShowSampledCheckBox, conversionShowQuantizedCheckBox, conversionShowReconstructedCheckBox,
                 conversionLineChart,
                 mseSamplingLabel, mseQuantizationLabel,
                 snrSamplingLabel, snrQuantizationLabel,
