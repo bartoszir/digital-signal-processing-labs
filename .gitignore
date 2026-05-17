@@ -39,3 +39,31 @@ buildNumber.properties
 *.dll
 *.so
 *.dylib
+
+# ===== LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*.idx
+*.ind
+*.ilg
+*.glo
+*.gls
+*.acn
+*.acr
+*.alg
+# docs/report/*.pdf
