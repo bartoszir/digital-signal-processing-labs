@@ -353,18 +353,18 @@
                               <children>
                                 <LineChart fx:id="lineSignalChart" createSymbols="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                   <xAxis>
-                                    <NumberAxis fx:id="lineXAxis" label="czas" side="BOTTOM" />
+                                    <NumberAxis fx:id="lineXAxis" label="czas [s]" side="BOTTOM" />
                                   </xAxis>
                                   <yAxis>
-                                    <NumberAxis fx:id="lineYAxis" label="amplituda" side="LEFT" />
+                                    <NumberAxis fx:id="lineYAxis" label="amplituda [-]" side="LEFT" />
                                   </yAxis>
                                 </LineChart>
                                 <ScatterChart fx:id="scatterSignalChart" managed="false" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                                   <xAxis>
-                                    <NumberAxis fx:id="scatterXAxis" label="czas" side="BOTTOM" />
+                                    <NumberAxis fx:id="scatterXAxis" label="czas [s]" side="BOTTOM" />
                                   </xAxis>
                                   <yAxis>
-                                    <NumberAxis fx:id="scatterYAxis" label="amplituda" side="LEFT" />
+                                    <NumberAxis fx:id="scatterYAxis" label="amplituda [-]" side="LEFT" />
                                   </yAxis>
                                 </ScatterChart>
                               </children>
@@ -448,15 +448,15 @@
                             <HBox spacing="20" alignment="CENTER_LEFT">
                               <children>
                                 <Label text="Warstwy wykresu: "/>
-                                <CheckBox fx:id="conversionShowOriginalCheckBox" text="Oryginalny" selected="true" style="-fx-text-fill: #9f9f9f;"/>
-                                <CheckBox fx:id="conversionShowSampledCheckBox" text="Spróbkowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
-                                <CheckBox fx:id="conversionShowQuantizedCheckBox" text="Skwantyzowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
-                                <CheckBox fx:id="conversionShowReconstructedCheckBox" text="Zrekonstruowany" selected="true" style="-fx-text-fill: #9f9f9f;"/>
+                                <CheckBox fx:id="conversionShowOriginalCheckBox" text="Oryginalny" selected="false" style="-fx-text-fill: #9f9f9f;"/>
+                                <CheckBox fx:id="conversionShowSampledCheckBox" text="Spróbkowany" selected="false" style="-fx-text-fill: #9f9f9f;"/>
+                                <CheckBox fx:id="conversionShowQuantizedCheckBox" text="Skwantyzowany" selected="false" style="-fx-text-fill: #9f9f9f;"/>
+                                <CheckBox fx:id="conversionShowReconstructedCheckBox" text="Zrekonstruowany" selected="false" style="-fx-text-fill: #9f9f9f;"/>
                               </children>
                             </HBox>
                             <LineChart fx:id="conversionLineChart" VBox.vgrow="ALWAYS" animated="false" createSymbols="false">
                               <xAxis>
-                                <NumberAxis fx:id="conversionXAxis" label="czas" side="BOTTOM" />
+                                <NumberAxis fx:id="conversionXAxis" label="czas [s]" side="BOTTOM" />
                               </xAxis>
                               <yAxis>
                                 <NumberAxis fx:id="conversionYAxis" label="amplituda" side="LEFT" />

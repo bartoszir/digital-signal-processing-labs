@@ -140,6 +140,10 @@ public class ConversionController {
                     conversionSession.setSampledSignal(null);
                     conversionSession.setQuantizedSignal(null);
                     conversionSession.setReconstructedSignal(null);
+                    showOriginalCheckBox.setSelected(true);
+                    showSampledCheckBox.setSelected(false);
+                    showQuantizedCheckBox.setSelected(false);
+                    showReconstructedCheckBox.setSelected(false);
                     updateChart();
                     clearSamplingLabels();
                     clearQuantizationLabels();
@@ -179,6 +183,10 @@ public class ConversionController {
             conversionSession.setSampledSignal(sampled);
             conversionSession.setQuantizedSignal(null);
             conversionSession.setReconstructedSignal(null);
+            showOriginalCheckBox.setSelected(false);
+            showSampledCheckBox.setSelected(true);
+            showQuantizedCheckBox.setSelected(false);
+            showReconstructedCheckBox.setSelected(false);
             updateChart();
             quantizeButton.setDisable(false);
             reconstructButton.setDisable(false);
@@ -211,6 +219,10 @@ public class ConversionController {
             }
 
             conversionSession.setReconstructedSignal(reconstructed);
+            showOriginalCheckBox.setSelected(false);
+            showSampledCheckBox.setSelected(false);
+            showQuantizedCheckBox.setSelected(false);
+            showReconstructedCheckBox.setSelected(true);
             updateChart();
             updateComparisonMetrics();
         } catch (NumberFormatException e) {
@@ -229,6 +241,10 @@ public class ConversionController {
             );
             conversionSession.setQuantizedSignal(quantized);
             conversionSession.setReconstructedSignal(null);
+            showOriginalCheckBox.setSelected(false);
+            showSampledCheckBox.setSelected(false);
+            showQuantizedCheckBox.setSelected(true);
+            showReconstructedCheckBox.setSelected(false);
             updateChart();
             updateComparisonMetrics();
         } catch (NumberFormatException e) {
