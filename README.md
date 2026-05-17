@@ -34,13 +34,23 @@ Both tasks are implemented as a single JavaFX desktop application located in `ta
 ### Screenshots
 
 **Signal generation — sinusoidal signal**
-<img src="./docs/screenshots/generate-sin-signal.png" width="800"/>
+
+<img src="./docs/screenshots/generate-sin-signal.png" width="700"/>
+
 
 **Histogram**
-<img src="./docs/screenshots/files-histogram.png" width="800"/>
+
+<img src="./docs/screenshots/files-histogram.png" width="700"/>
+
 
 **Signal operations**
-<img src="./docs/screenshots/signal-operation.png" width="800"/>
+
+<img src="./docs/screenshots/signal-operation.png" width="700"/>
+
+
+**Signal conversion**
+
+<img src="./docs/screenshots/conversion-example.png" width="700"/>
 
 ### Tech Stack
 - **Java 23**
