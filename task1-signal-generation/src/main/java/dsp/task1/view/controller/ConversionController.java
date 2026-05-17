@@ -12,6 +12,7 @@ import dsp.task1.logic.service.SignalManager;
 import dsp.task1.logic.signal.SignalType;
 import dsp.task1.view.utils.Helper;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
@@ -245,6 +246,29 @@ public class ConversionController {
             showQuantizedCheckBox.isSelected());
         setSeriesVisible(reconstructedSeries, conversionSession.getReconstructedSignal(),
             showReconstructedCheckBox.isSelected());
+        updateChartAxes();
+    }
+
+    private void updateChartAxes() {
+        double startTime = Double.MAX_VALUE;
+        double endTime = Double.MIN_VALUE;
+
+        if (conversionSession.getOriginalSignal() != null) {
+            List<Sample> samples = conversionSession.getOriginalSignal().getSamples();
+            if (!samples.isEmpty()) {
+                startTime = Math.min(startTime, samples.get(0).getTime());
+                endTime = Math.max(endTime, samples.get(samples.size() - 1).getTime());
+            }
+        }
+
+        if (startTime == Double.MAX_VALUE) return;
+
+        double range = endTime - startTime;
+        NumberAxis xAxis = (NumberAxis) conversionChart.getXAxis();
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(startTime - 0.5);
+        xAxis.setUpperBound(endTime + 0.5);
+        xAxis.setTickUnit(Math.max(1.0, Math.ceil(range / 10.0)));
     }
 
     private void setSeriesVisible(XYChart.Series<Number, Number> series,
