@@ -459,7 +459,7 @@
                             <GridPane hgap="10" vgap="5">
                               <children>
                                 <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <Label text="Próbkowanie" style="-fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Rekonstrukcja" style="-fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                                 <Label text="Kwantyzacja" style="-fx-font-weight: bold;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
 
                                 <Label text="MSE:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>

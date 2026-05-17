@@ -6,12 +6,16 @@ import dsp.task1.logic.model.SignalData;
 import dsp.task1.logic.service.QuantizationService;
 import dsp.task1.logic.service.ReconstructionService;
 import dsp.task1.logic.service.SamplingService;
+import dsp.task1.logic.service.SignalComparisonService;
+import dsp.task1.logic.service.SignalComparisonService.ComparisonResult;
 import dsp.task1.logic.service.SignalManager;
+import dsp.task1.logic.signal.SignalType;
 import dsp.task1.view.utils.Helper;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConversionController {
@@ -48,6 +52,7 @@ public class ConversionController {
     private final SamplingService samplingService = new SamplingService();
     private final QuantizationService quantizationService = new QuantizationService();
     private final ReconstructionService reconstructionService = new ReconstructionService();
+    private final SignalComparisonService comparisonService = new SignalComparisonService();
 
     private final XYChart.Series<Number, Number> originalSeries = new XYChart.Series<>();
     private final XYChart.Series<Number, Number> sampledSeries = new XYChart.Series<>();
@@ -134,6 +139,8 @@ public class ConversionController {
                     conversionSession.setQuantizedSignal(null);
                     conversionSession.setReconstructedSignal(null);
                     updateChart();
+                    clearSamplingLabels();
+                    clearQuantizationLabels();
                     sampleButton.setDisable(false);
                     quantizeButton.setDisable(true);
                     reconstructButton.setDisable(true);
@@ -203,6 +210,7 @@ public class ConversionController {
 
             conversionSession.setReconstructedSignal(reconstructed);
             updateChart();
+            updateComparisonMetrics();
         } catch (NumberFormatException e) {
             Helper.showError("Błąd", "Podaj poprawne wartości liczby próbek.");
         } catch (IllegalArgumentException e) {
@@ -220,6 +228,7 @@ public class ConversionController {
             conversionSession.setQuantizedSignal(quantized);
             conversionSession.setReconstructedSignal(null);
             updateChart();
+            updateComparisonMetrics();
         } catch (NumberFormatException e) {
             Helper.showError("Błąd", "Podaj poprawną liczbę bitów (liczba całkowita).");
         } catch (IllegalArgumentException e) {
@@ -247,6 +256,99 @@ public class ConversionController {
                 series.getData().add(new XYChart.Data<>(s.getTime(), s.getValue()));
             }
         }
+    }
+
+    private void updateComparisonMetrics() {
+        if (conversionSession.getOriginalSignal() != null
+                && conversionSession.getReconstructedSignal() != null) {
+            try {
+                SignalData alignedOriginal = alignSamples(
+                    conversionSession.getOriginalSignal(),
+                    conversionSession.getReconstructedSignal()
+                );
+                ComparisonResult sampling = comparisonService.compare(
+                    alignedOriginal,
+                    conversionSession.getReconstructedSignal()
+                );
+                mseSamplingLabel.setText(String.format("%.6f", sampling.mse()));
+                snrSamplingLabel.setText(String.format("%.2f dB", sampling.snr()));
+                psnrSamplingLabel.setText(String.format("%.2f dB", sampling.psnr()));
+                mdSamplingLabel.setText(String.format("%.6f", sampling.md()));
+            } catch (Exception e) {
+                clearSamplingLabels();
+            }
+        } else {
+            clearSamplingLabels();
+        }
+
+        if (conversionSession.getSampledSignal() != null
+                && conversionSession.getQuantizedSignal() != null) {
+            try {
+                ComparisonResult quantization = comparisonService.compare(
+                    conversionSession.getSampledSignal(),
+                    conversionSession.getQuantizedSignal()
+                );
+                mseQuantizationLabel.setText(String.format("%.6f", quantization.mse()));
+                snrQuantizationLabel.setText(String.format("%.2f dB", quantization.snr()));
+                psnrQuantizationLabel.setText(String.format("%.2f dB", quantization.psnr()));
+                mdQuantizationLabel.setText(String.format("%.6f", quantization.md()));
+            } catch (Exception e) {
+                clearQuantizationLabels();
+            }
+        } else {
+            clearQuantizationLabels();
+        }
+    }
+
+    private void clearSamplingLabels() {
+        mseSamplingLabel.setText("-");
+        snrSamplingLabel.setText("-");
+        psnrSamplingLabel.setText("-");
+        mdSamplingLabel.setText("-");
+    }
+
+    private void clearQuantizationLabels() {
+        mseQuantizationLabel.setText("-");
+        snrQuantizationLabel.setText("-");
+        psnrQuantizationLabel.setText("-");
+        mdQuantizationLabel.setText("-");
+    }
+
+    private SignalData alignSamples(SignalData reference, SignalData target) {
+        List<Sample> refSamples = reference.getSamples();
+        List<Sample> targetSamples = target.getSamples();
+
+        List<Sample> aligned = new ArrayList<>();
+        for (Sample targetSample : targetSamples) {
+            double value = interpolateLinear(refSamples, targetSample.getTime());
+            aligned.add(new Sample(targetSample.getTime(), value));
+        }
+
+        return new SignalData(
+            reference.getName() + "_aligned",
+            reference.getSignalType(),
+            reference.getParameters(),
+            aligned
+        );
+    }
+
+    private double interpolateLinear(List<Sample> samples, double t) {
+        if (samples.isEmpty()) return 0.0;
+        if (t <= samples.get(0).getTime()) return samples.get(0).getValue();
+        if (t >= samples.get(samples.size() - 1).getTime()) {
+            return samples.get(samples.size() - 1).getValue();
+        }
+
+        for (int i = 0; i < samples.size() - 1; i++) {
+            double t0 = samples.get(i).getTime();
+            double t1 = samples.get(i + 1).getTime();
+            if (t >= t0 && t <= t1) {
+                double ratio = (t - t0) / (t1 - t0);
+                return samples.get(i).getValue()
+                    + ratio * (samples.get(i + 1).getValue() - samples.get(i).getValue());
+            }
+        }
+        return 0.0;
     }
 
     public void updateInputSignalComboBox(List<String> signalNames) {
