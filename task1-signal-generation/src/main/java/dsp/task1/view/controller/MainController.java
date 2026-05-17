@@ -1,5 +1,6 @@
 package dsp.task1.view.controller;
 
+import dsp.task1.logic.model.ConversionSession;
 import dsp.task1.logic.model.Sample;
 import dsp.task1.logic.model.SignalData;
 import dsp.task1.logic.model.SignalParameters;
@@ -17,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -80,16 +82,52 @@ public class MainController implements Initializable {
     @FXML private ComboBox<SignalOperationType> signalOperationTypeComboBox;
     @FXML private Button performOperationButton;
 
+    /*------------------- Conversion Tab — Left Panel -------------------*/
+    @FXML private ComboBox<String> conversionInputSignalComboBox;
+    @FXML private TextField conversionSamplingFrequencyField;
+    @FXML private Button sampleButton;
+    @FXML private TextField conversionBitsField;
+    @FXML private ComboBox<String> quantizationMethodComboBox;
+    @FXML private Button quantizeButton;
+    @FXML private ComboBox<String> reconstructionMethodComboBox;
+    @FXML private VBox sincParamsBox;
+    @FXML private TextField sincLeftSamplesField;
+    @FXML private TextField sincRightSamplesField;
+    @FXML private Button reconstructButton;
+
+    /*------------------- Conversion Tab — Right Panel -------------------*/
+    @FXML private CheckBox conversionShowOriginalCheckBox;
+    @FXML private CheckBox conversionShowSampledCheckBox;
+    @FXML private CheckBox conversionShowQuantizedCheckBox;
+    @FXML private CheckBox conversionShowReconstructedCheckBox;
+    @FXML private LineChart<Number, Number> conversionLineChart;
+    @FXML private NumberAxis conversionXAxis;
+    @FXML private NumberAxis conversionYAxis;
+    @FXML private Label mseSamplingLabel;
+    @FXML private Label mseQuantizationLabel;
+    @FXML private Label snrSamplingLabel;
+    @FXML private Label snrQuantizationLabel;
+    @FXML private Label psnrSamplingLabel;
+    @FXML private Label psnrQuantizationLabel;
+    @FXML private Label mdSamplingLabel;
+    @FXML private Label mdQuantizationLabel;
+
+    /*------------------- Tab Panes -------------------*/
+    @FXML private TabPane leftTabPane;
+    @FXML private TabPane rightTabPane;
+
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
     @FXML private CheckBox showSymbolsCheckBox;
 
     private final SignalManager signalManager = new SignalManager();
     private SignalData currentSignalData;
+    private final ConversionSession conversionSession = new ConversionSession();
 
     private ChartService chartService;
     private StatisticsDisplayService statisticsDisplayService;
     private SignalFormService signalFormService;
+    private ConversionController conversionController;
 
     /*========================= METHODS =========================*/
 
@@ -115,6 +153,23 @@ public class MainController implements Initializable {
                 unitImpulseParamsPane, impulseNoiseParamsPane
         );
 
+        conversionController = new ConversionController(
+                conversionInputSignalComboBox,
+                conversionSamplingFrequencyField, sampleButton,
+                conversionBitsField, quantizationMethodComboBox, quantizeButton,
+                reconstructionMethodComboBox, sincParamsBox,
+                sincLeftSamplesField, sincRightSamplesField, reconstructButton,
+                conversionShowOriginalCheckBox, conversionShowSampledCheckBox, conversionShowQuantizedCheckBox, conversionShowReconstructedCheckBox,
+                conversionLineChart,
+                mseSamplingLabel, mseQuantizationLabel,
+                snrSamplingLabel, snrQuantizationLabel,
+                psnrSamplingLabel, psnrQuantizationLabel,
+                mdSamplingLabel, mdQuantizationLabel,
+                signalManager, conversionSession
+        );
+        conversionController.initialize();
+        conversionController.setShowSymbols(showSymbolsCheckBox.isSelected());
+
         signalTypeComboBox.getItems().setAll(
             Arrays.stream(SignalType.values())
                 .filter(type -> type != SignalType.OPERATION_RESULT)
@@ -135,6 +190,24 @@ public class MainController implements Initializable {
         histogramXAxis.setLabel("Przedziały wartości");
         histogramYAxis.setLabel("Liczba próbek");
 
+        leftTabPane.getSelectionModel().selectedItemProperty()
+            .addListener((obs, oldTab, newTab) -> {
+                if (newTab != null) {
+                    switch (newTab.getText()) {
+                        case "Generowanie", "Pliki", "Operacje" ->
+                            rightTabPane.getTabs().stream()
+                                .filter(tab -> "Wykres".equals(tab.getText()))
+                                .findFirst()
+                                .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                        case "Konwersja" ->
+                            rightTabPane.getTabs().stream()
+                                .filter(tab -> "Konwersja".equals(tab.getText()))
+                                .findFirst()
+                                .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                    }
+                }
+            });
+
         signalFormService.setDefaultValues();
         refreshLoadedSignalsList();
 
@@ -148,8 +221,10 @@ public class MainController implements Initializable {
                 }
         );
 
-        showSymbolsCheckBox.selectedProperty().addListener((obs, oldVal, selected) ->
-                lineSignalChart.setCreateSymbols(selected));
+        showSymbolsCheckBox.selectedProperty().addListener((obs, oldVal, selected) -> {
+            lineSignalChart.setCreateSymbols(selected);
+            conversionController.setShowSymbols(selected);
+        });
 
         signalOperationTypeComboBox.getItems().setAll(SignalOperationType.values());
 
@@ -165,6 +240,20 @@ public class MainController implements Initializable {
         scatterSignalChart.setVerticalZeroLineVisible(true);
         scatterXAxis.setAnimated(false);
         scatterYAxis.setAnimated(false);
+    }
+
+    @FXML
+    private void onResetGenerationClicked() {
+        signalFormService.setDefaultValues();
+        signalFormService.clearFieldStyles();
+        if (currentSignalData != null) {
+            displayLoadedSignal(currentSignalData);
+        }
+    }
+
+    @FXML
+    private void onResetConversionClicked() {
+        conversionController.reset();
     }
 
     @FXML
@@ -381,6 +470,11 @@ public class MainController implements Initializable {
         List<String> names = new ArrayList<>(signalManager.getLoadedSignals().keySet());
         loadedSignalsListView.getItems().setAll(names);
         refreshOperationSignalSelectors(names);
+        updateConversionSignalComboBox(names);
+    }
+
+    private void updateConversionSignalComboBox(List<String> names) {
+        conversionController.updateInputSignalComboBox(names);
     }
 
     private void refreshOperationSignalSelectors(List<String> names) {
