@@ -64,7 +64,8 @@ public class ReconstructionService {
         List<Sample> result = new ArrayList<>();
 
         for (double t = startTime; t <= endTime + dt / 2; t += dt) {
-            int nearestIndex = (int) Math.round((t - startTime) / Ts);
+            // int nearestIndex = (int) Math.round((t - startTime) / Ts);
+            int nearestIndex = (int) Math.floor((t - startTime) / Ts);
             nearestIndex = Math.max(0, Math.min(sampledSamples.size() - 1, nearestIndex));
 
             double value = 0.0;
