@@ -1,0 +1,383 @@
+/* ===== ROOT ===== */
+.root {
+    -fx-background-color: #2B2B2B;
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ===== LABELS ===== */
+.label {
+    -fx-text-fill: #F0F0F0;
+}
+
+/* ===== BUTTONS ===== */
+.button {
+    -fx-background-color: #686868;
+    -fx-text-fill: #F0F0F0;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-padding: 5 12 5 12;
+}
+.button:hover {
+    -fx-background-color: #7E7E7E;
+}
+.button:pressed {
+    -fx-background-color: #545454;
+}
+
+/* ===== TEXT FIELDS ===== */
+.text-field {
+    -fx-background-color: #4A4A4A;
+    -fx-text-fill: #F0F0F0;
+    -fx-border-color: #666666;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-prompt-text-fill: #999999;
+}
+.text-field:focused {
+    -fx-border-color: #E8453C;
+}
+
+/* ===== COMBO BOX ===== */
+.combo-box {
+    -fx-background-color: #4A4A4A;
+    -fx-border-color: #666666;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+.combo-box .list-cell {
+    -fx-background-color: #4A4A4A;
+    -fx-text-fill: #F0F0F0;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: #4A4A4A;
+    -fx-border-color: #666666;
+}
+.combo-box-popup .list-cell {
+    -fx-background-color: #4A4A4A;
+    -fx-text-fill: #F0F0F0;
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #686868;
+}
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #686868;
+    -fx-text-fill: #F0F0F0;
+}
+.combo-box .arrow-button {
+    -fx-background-color: #555555;
+}
+.combo-box .arrow {
+    -fx-background-color: #F0F0F0;
+}
+
+/* ===== LIST VIEW ===== */
+.list-view {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #555555;
+    -fx-border-radius: 3;
+}
+.list-cell {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #F0F0F0;
+}
+.list-cell:odd {
+    -fx-background-color: #424242;
+}
+.list-cell:selected {
+    -fx-background-color: #686868;
+    -fx-text-fill: #F0F0F0;
+}
+.list-cell:hover {
+    -fx-background-color: #555555;
+}
+.list-cell:selected:hover {
+    -fx-background-color: #7E7E7E;
+}
+
+/* ===== TAB PANE ===== */
+.tab-pane {
+    -fx-background-color: #3C3C3C;
+}
+.tab-pane .tab-header-area {
+    -fx-background-color: #2B2B2B;
+}
+.tab-pane .tab-header-background {
+    -fx-background-color: #2B2B2B;
+}
+.tab {
+    -fx-background-color: #2B2B2B;
+}
+.tab:selected {
+    -fx-background-color: #3C3C3C;
+}
+.tab .tab-label {
+    -fx-text-fill: #999999;
+}
+.tab:selected .tab-label {
+    -fx-text-fill: #F0F0F0;
+}
+
+/* ===== SPLIT PANE ===== */
+.split-pane {
+    -fx-background-color: #2B2B2B;
+    -fx-padding: 0;
+}
+.split-pane-divider {
+    -fx-background-color: #555555;
+    -fx-padding: 0 1 0 1;
+}
+
+/* ===== SCROLL BAR ===== */
+.scroll-bar {
+    -fx-background-color: #3C3C3C;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #666666;
+    -fx-background-radius: 3;
+}
+.scroll-bar .thumb:hover {
+    -fx-background-color: #E8453C;
+}
+.scroll-bar .track {
+    -fx-background-color: #3C3C3C;
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: #3C3C3C;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: #999999;
+}
+
+/* ===== TEXT AREA ===== */
+.text-area {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #F0F0F0;
+    -fx-border-color: #555555;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+.text-area .content {
+    -fx-background-color: #3C3C3C;
+}
+
+#fileContentTextArea {
+    -fx-font-family: "Courier New", monospace;
+    -fx-font-size: 12px;
+}
+
+/* ===== SEPARATOR ===== */
+.separator .line {
+    -fx-border-color: #555555;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ===== SPINNER ===== */
+.spinner {
+    -fx-background-color: #4A4A4A;
+    -fx-border-color: #666666;
+    -fx-border-radius: 3;
+}
+.spinner .text-field {
+    -fx-border-color: transparent;
+}
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: #555555;
+}
+.spinner .increment-arrow-button:hover,
+.spinner .decrement-arrow-button:hover {
+    -fx-background-color: #E8453C;
+}
+.spinner .increment-arrow,
+.spinner .decrement-arrow {
+    -fx-background-color: #F0F0F0;
+}
+
+/* ===== CHARTS — wspólne ===== */
+.chart {
+    -fx-background-color: #3C3C3C;
+    -fx-padding: 5;
+}
+.chart-plot-background {
+    -fx-background-color: #F0F0F0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.chart-content {
+    -fx-padding: 0;
+}
+
+.chart-legend {
+    -fx-background-color: #3C3C3C;
+}
+.chart-legend-item {
+    -fx-text-fill: #F0F0F0;
+}
+.chart-title {
+    -fx-text-fill: #F0F0F0;
+}
+.axis {
+    -fx-tick-label-fill: #F0F0F0;
+}
+.axis-label {
+    -fx-text-fill: #F0F0F0;
+}
+.chart-vertical-grid-lines {
+    -fx-stroke: rgba(180, 180, 180, 0.4);
+    -fx-stroke-width: 0.6px;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: rgba(180, 180, 180, 0.4);
+    -fx-stroke-width: 0.6px;
+}
+.chart-vertical-zero-line {
+    -fx-stroke: rgba(100, 149, 237, 0.7);
+    -fx-stroke-width: 1px;
+    -fx-stroke-dash-array: 6 4;
+}
+.chart-horizontal-zero-line {
+    -fx-stroke: rgba(100, 149, 237, 0.7);
+    -fx-stroke-width: 1px;
+    -fx-stroke-dash-array: 6 4;
+}
+.chart-zero-baseline-line {
+    -fx-stroke: rgba(100, 149, 237, 0.7);
+    -fx-stroke-width: 1px;
+    -fx-stroke-dash-array: 6 4;
+}
+.axis-line {
+    -fx-stroke: transparent;
+}
+.axis:left {
+    -fx-padding: 0 10 0 5;
+}
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+.chart-alternative-column-fill {
+    -fx-fill: transparent;
+}
+
+/* ===== LINE CHART ===== */
+.line-chart .chart-series-line {
+    -fx-stroke: rgba(232, 69, 60, 0.8);
+    -fx-stroke-width: 2px;
+}
+.line-chart .chart-line-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);
+    -fx-background-radius: 2px;
+    -fx-padding: px;
+}
+
+.chart-line-symbol {
+    -fx-padding: 2px !important;
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8) !important;
+    -fx-background-radius: 2px !important;
+}
+
+/* ===== CONVERSION CHART — serie ===== */
+
+.conversion-chart .series0.chart-series-line {
+    -fx-stroke: rgba(100, 149, 237, 0.7) !important;
+    -fx-stroke-width: 2px !important;
+}
+.conversion-chart .series0.chart-line-symbol {
+    -fx-background-color: rgba(100, 149, 237, 0.7), rgba(100, 149, 237, 0.7) !important;
+    -fx-background-radius: 2px !important;
+    -fx-padding: 2px !important;
+}
+
+.conversion-chart .series1.chart-series-line {
+    -fx-stroke: transparent !important;
+}
+.conversion-chart .series1.chart-line-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.7), rgba(232, 69, 60, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 3px !important;
+}
+
+.conversion-chart .series2.chart-series-line {
+    -fx-stroke: transparent !important;
+}
+.conversion-chart .series2.chart-line-symbol {
+    -fx-background-color: rgba(255, 165, 0, 0.7), rgba(255, 165, 0, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 3px !important;
+}
+
+.conversion-chart .series3.chart-series-line {
+    -fx-stroke: rgba(80, 200, 120, 0.7) !important;
+    -fx-stroke-width: 2px !important;
+}
+.conversion-chart .series3.chart-line-symbol {
+    -fx-background-color: rgba(80, 200, 120, 0.7), rgba(80, 200, 120, 0.7) !important;
+    -fx-background-radius: 2px !important;
+    -fx-padding: 2px !important;
+}
+
+/* ===== CONVERSION CHART — legenda ===== */
+.conversion-chart .series0.chart-legend-item-symbol {
+    -fx-background-color: rgba(100, 149, 237, 0.7), rgba(100, 149, 237, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 4px !important;
+}
+.conversion-chart .series1.chart-legend-item-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.7), rgba(232, 69, 60, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 4px !important;
+}
+.conversion-chart .series2.chart-legend-item-symbol {
+    -fx-background-color: rgba(255, 165, 0, 0.7), rgba(255, 165, 0, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 4px !important;
+}
+.conversion-chart .series3.chart-legend-item-symbol {
+    -fx-background-color: rgba(80, 200, 120, 0.7), rgba(80, 200, 120, 0.7) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 4px !important;
+}
+
+/* ===== HIDE LINE SYMBOLS ===== */
+.hide-line-symbols .series0.chart-line-symbol {
+    -fx-padding: 0px !important;
+    -fx-background-color: transparent, transparent !important;
+}
+.hide-line-symbols .series3.chart-line-symbol {
+    -fx-padding: 0px !important;
+    -fx-background-color: transparent, transparent !important;
+}
+.hide-line-symbols .series0.chart-legend-item-symbol {
+    -fx-padding: 4px !important;
+    -fx-background-color: rgba(100, 149, 237, 0.7), rgba(100, 149, 237, 0.7) !important;
+    -fx-background-radius: 3px !important;
+}
+.hide-line-symbols .series3.chart-legend-item-symbol {
+    -fx-padding: 4px !important;
+    -fx-background-color: rgba(80, 200, 120, 0.7), rgba(80, 200, 120, 0.7) !important;
+    -fx-background-radius: 3px !important;
+}
+
+/* ===== BAR CHART (histogram) ===== */
+.bar-chart .default-color0.chart-bar {
+    -fx-bar-fill: rgba(232, 69, 60, 0.8);
+}
+.bar-chart .default-color0.chart-bar:hover {
+    -fx-bar-fill: rgba(232, 69, 60, 0.6);
+}
+
+/* ===== SCATTER CHART ===== */
+.scatter-chart .default-color0.chart-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8);
+}
+
+.scatter-chart .chart-legend .chart-legend-item-symbol {
+    -fx-background-color: rgba(232, 69, 60, 0.8), rgba(232, 69, 60, 0.8) !important;
+    -fx-background-radius: 3px !important;
+    -fx-padding: 4px !important;
+}
