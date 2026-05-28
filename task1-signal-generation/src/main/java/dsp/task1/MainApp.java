@@ -17,7 +17,7 @@ public class MainApp extends Application {
         scene.getStylesheets().add(MainApp.class.getResource("style.css").toExternalForm());
         stage.setTitle("CPS");
         stage.setScene(scene);
-        stage.setResizable(false);
+//        stage.setResizable(false);
         stage.show();
     }
 

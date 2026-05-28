@@ -69,7 +69,7 @@ public class ReconstructionService {
             nearestIndex = Math.max(0, Math.min(sampledSamples.size() - 1, nearestIndex));
 
             double value = 0.0;
-            int fromIndex = Math.max(0, nearestIndex - samplesLeft);
+            int fromIndex = Math.max(0, nearestIndex - samplesLeft + 1);
             int toIndex = Math.min(sampledSamples.size() - 1, nearestIndex + samplesRight);
 
             for (int i = fromIndex; i <= toIndex; i++) {

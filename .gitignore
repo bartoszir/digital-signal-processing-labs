@@ -67,3 +67,6 @@ buildNumber.properties
 *.acr
 *.alg
 # docs/report/*.pdf
+.classpath
+.project
+.settings

@@ -25,13 +25,14 @@ public class QuantizationService {
             .mapToDouble(Sample::getValue)
             .max().orElse(1.0);
 
+        // TODO: sprawdzic dlaczego pomimo wybrania np. 3 bitow (czyli 8 poziomów) powstaje 9 poziomów na wykresie
         int levels = (int) Math.pow(2, bits);
-        double step = (max - min) / levels;
+        double step = (max - min) / levels; // przy levels=8 => step=4/8=0.5
 
         List<Sample> quantizedSamples = new ArrayList<>();
         for (Sample s : inputSamples) {
-            double quantized = Math.round((s.getValue() - min) / step) * step + min;
-            quantized = Math.max(min, Math.min(max, quantized));
+            double quantized = Math.floor((s.getValue() - min) / step) * step + min; // TODO: czy tu nie ma problemu
+            quantized = Math.max(min, Math.min(max - step, quantized)); // zeby najwyzszy poziom byl najwyzszym mozliwym
             quantizedSamples.add(new Sample(s.getTime(), quantized));
         }
 
