@@ -46,6 +46,7 @@ public class ConvolutionTest {
         assertThrows(IllegalArgumentException.class, () -> Convolution.convolve(hSignal, xSignal));
     }
 
+
     @Test
     void shouldGiveSameResultWhenInputIsReversed() {
         List<Sample> hx = Convolution.convolve(hSignal, xSignal);

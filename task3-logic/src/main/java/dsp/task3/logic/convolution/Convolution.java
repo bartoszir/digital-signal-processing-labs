@@ -61,4 +61,19 @@ public final class Convolution {
                 .mapToObj(n -> new Sample(n * dt, convolvedValues.get(n)))
                 .toList();
     }
+
+    public static List<Sample> convolve(List<Double> hCoefficients, SignalData x) {
+        double fp = x.getParameters().getSamplingFrequency();
+        double dt = 1.0 / fp;
+
+        List<Double> xValues = x.getSamples().stream()
+                .map(Sample::getValue)
+                .toList();
+
+        List<Double> convolvedValues = convolveValues(hCoefficients, xValues);
+
+        return IntStream.range(0, convolvedValues.size())
+                .mapToObj(n -> new Sample(n * dt, convolvedValues.get(n)))
+                .toList();
+    }
 }
