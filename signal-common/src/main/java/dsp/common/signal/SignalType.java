@@ -13,7 +13,8 @@ public enum SignalType {
     UNIT_JUMP_SIGNAL("skok jednostkowy"),
     UNIT_IMPULSE_SIGNAL("impuls jednostkowy"),
     IMPULSE_NOISE_SIGNAL("szum impulsowy"),
-    OPERATION_RESULT("wynik operacji");
+    OPERATION_RESULT("wynik operacji"),
+    CONVOLUTION_RESULT("wynik splotu");
 
     private final String name;
 
