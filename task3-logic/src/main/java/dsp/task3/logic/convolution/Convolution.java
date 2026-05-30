@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * klasa wykonująca splot dwóch sygnałów dyskretnych.
- * Warunek: oba sygnały muszą mieć tę samą częstotliwość próbkowania (fp)
+ * Klasa narzędziowa wykonująca splot sydkretny dwóch sygnałów.
+ * Implementuje wzór (2): (h*x)(n) = suma k=0..M-1 z h(k)*x(n-k)
+ * Warunek: oba sygnały muszą mieć tę samą częstotliwość próbkowania (fp).
+ * Sygnał wynikowy ma M+N-1 próbek i oś czasu zaczynającą się od t=0.
  */
 public final class Convolution {
 
@@ -22,7 +24,7 @@ public final class Convolution {
         int N = x.size();
         int resultSize = M + N - 1;
 
-        List<Double> result_list = new ArrayList<>(resultSize);
+        List<Double> resultList = new ArrayList<>(resultSize);
         double sum = 0;
 
         for (int n = 0; n < resultSize; n++) {
@@ -31,15 +33,25 @@ public final class Convolution {
                     sum += h.get(k) * x.get(n - k);
                 }
             }
-            result_list.add(n, sum);
+            resultList.add(n, sum);
             sum = 0;
         }
 
-        return result_list;
+        return resultList;
     }
 
-    public static List<Sample> convolve(SignalData h, SignalData x) {
 
+    /**
+     * Oblicza splot dwóch sygnałów dyskretnych.
+     * @param h pierwszy sygnał wejściowy
+     * @param x drugi sygnał wejściowy
+     * @return splot h*x jako lista próbek o rozmiarze M+N-1
+     * @throws IllegalArgumentException gdy sygnały są puste lub mają różne fp
+     */
+    public static List<Sample> convolve(SignalData h, SignalData x) {
+        if (h.getSamples().isEmpty() || x.getSamples().isEmpty()) {
+            throw new IllegalArgumentException("Sygnały nie mogą być puste.");
+        }
         // porównywanie nie poprzez != z uwagi na problemy z precyzją zmiennoprzecinkową w takich porównaniach
         if (Math.abs(h.getParameters().getSamplingFrequency() - x.getParameters().getSamplingFrequency()) > 1e-9) {
             throw new IllegalArgumentException("Sygnały muszą mieć tę samą częstotliwość próbkowania (fp)");
@@ -62,7 +74,19 @@ public final class Convolution {
                 .toList();
     }
 
+
+    /**
+     * Oblicza splot współczynników filtru z sygnałem wejściowym.
+     * Używane w filtracji FIR oraz korelacji przez splot.
+     * @param hCoefficients współczynniki filtru h(n)
+     * @param x sygnał wejściowy — fp pobierane z tego sygnału
+     * @return splot jako lista próbek o rozmiarze M+N-1
+     * @throws IllegalArgumentException gdy lista lub sygnał są puste
+     */
     public static List<Sample> convolve(List<Double> hCoefficients, SignalData x) {
+        if (hCoefficients.isEmpty() || x.getSamples().isEmpty()) {
+            throw new IllegalArgumentException("Sygnały nie mogą być puste.");
+        }
         double fp = x.getParameters().getSamplingFrequency();
         double dt = 1.0 / fp;
 

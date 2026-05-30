@@ -82,6 +82,9 @@ public class FirFilterService {
      * @return przefiltrowany sygnał jako lista próbek o rozmiarze M + N - 1
      */
     public List<Sample> filter(SignalData x) {
+        if (x.getSamples().isEmpty()) {
+            throw new IllegalArgumentException("Sygnały nie mogą być puste.");
+        }
         return Convolution.convolve(coefficients, x);
     }
 }
