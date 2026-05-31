@@ -9,6 +9,8 @@ import dsp.task1.logic.operations.SignalOperationType;
 import dsp.common.io.SignalFileException;
 import dsp.task1.logic.service.SignalManager;
 import dsp.common.signal.SignalType;
+import dsp.task3.logic.filter.FilterType;
+import dsp.task3.logic.filter.WindowType;
 import dsp.app.view.utils.ChartService;
 import dsp.app.view.utils.Helper;
 import dsp.app.view.utils.SignalFormService;
@@ -116,6 +118,53 @@ public class MainController implements Initializable {
     @FXML private TabPane leftTabPane;
     @FXML private TabPane rightTabPane;
 
+    /*------------------- Zadanie 3 — Sub-tab Panes -------------------*/
+    @FXML private TabPane task3LeftSubTabPane;
+    @FXML private TabPane task3RightSubTabPane;
+
+    /*------------------- Zadanie 3 — Splot Left Panel -------------------*/
+    @FXML private ComboBox<String> task3SplotHComboBox;
+    @FXML private ComboBox<String> task3SplotXComboBox;
+    @FXML private Button task3SplotCalculateButton;
+
+    /*------------------- Zadanie 3 — Splot Right Panel -------------------*/
+    @FXML private LineChart<Number, Number> task3SplotChart;
+
+    /*------------------- Zadanie 3 — Filtracja FIR Left Panel -------------------*/
+    @FXML private TextField task3FirMField;
+    @FXML private TextField task3FirKField;
+    @FXML private ComboBox<WindowType> task3FirWindowComboBox;
+    @FXML private ComboBox<FilterType> task3FirFilterTypeComboBox;
+    @FXML private ComboBox<String> task3FirSignalComboBox;
+    @FXML private Button task3FirApplyButton;
+
+    /*------------------- Zadanie 3 — Filtracja FIR Right Panel -------------------*/
+    @FXML private LineChart<Number, Number> task3FirImpulseChart;
+    @FXML private LineChart<Number, Number> task3FirFilteredChart;
+
+    /*------------------- Zadanie 3 — Korelacja Left Panel -------------------*/
+    @FXML private ComboBox<String> task3CorrHComboBox;
+    @FXML private ComboBox<String> task3CorrXComboBox;
+    @FXML private ComboBox<String> task3CorrMethodComboBox;
+    @FXML private Button task3CorrCalculateButton;
+
+    /*------------------- Zadanie 3 — Symulacja Left Panel -------------------*/
+    @FXML private TextField task3SimSignalSpeedField;
+    @FXML private TextField task3SimObjectSpeedField;
+    @FXML private TextField task3SimInitialDistanceField;
+    @FXML private TextField task3SimSamplingFreqField;
+    @FXML private TextField task3SimBufferSizeField;
+    @FXML private TextField task3SimReportingPeriodField;
+    @FXML private TextField task3SimF1Field;
+    @FXML private TextField task3SimF2Field;
+    @FXML private TextField task3SimStepsField;
+    @FXML private Button task3SimulateButton;
+
+    /*------------------- Zadanie 3 — Korelacja/Symulacja Right Panel -------------------*/
+    @FXML private LineChart<Number, Number> task3CorrResultChart;
+    @FXML private LineChart<Number, Number> task3CorrSignalsChart;
+    @FXML private LineChart<Number, Number> task3SimResultChart;
+
     /*------------------- Others -------------------*/
     @FXML private Button generateButton;
     @FXML private CheckBox showSymbolsCheckBox;
@@ -128,6 +177,7 @@ public class MainController implements Initializable {
     private StatisticsDisplayService statisticsDisplayService;
     private SignalFormService signalFormService;
     private ConversionController conversionController;
+    private Task3Controller task3Controller;
 
     /*========================= METHODS =========================*/
 
@@ -170,6 +220,24 @@ public class MainController implements Initializable {
         conversionController.initialize();
         conversionController.setShowSymbols(showSymbolsCheckBox.isSelected());
 
+        task3Controller = new Task3Controller(
+                task3SplotHComboBox, task3SplotXComboBox, task3SplotCalculateButton,
+                task3SplotChart,
+                task3FirMField, task3FirKField,
+                task3FirWindowComboBox, task3FirFilterTypeComboBox,
+                task3FirSignalComboBox, task3FirApplyButton,
+                task3FirImpulseChart, task3FirFilteredChart,
+                task3CorrHComboBox, task3CorrXComboBox,
+                task3CorrMethodComboBox, task3CorrCalculateButton,
+                task3SimSignalSpeedField, task3SimObjectSpeedField, task3SimInitialDistanceField,
+                task3SimSamplingFreqField, task3SimBufferSizeField, task3SimReportingPeriodField,
+                task3SimF1Field, task3SimF2Field, task3SimStepsField, task3SimulateButton,
+                task3CorrResultChart, task3CorrSignalsChart, task3SimResultChart,
+                task3LeftSubTabPane, task3RightSubTabPane,
+                signalManager
+        );
+        task3Controller.initialize();
+
         signalTypeComboBox.getItems().setAll(
             Arrays.stream(SignalType.values())
                 .filter(type -> type != SignalType.OPERATION_RESULT)
@@ -202,6 +270,11 @@ public class MainController implements Initializable {
                         case "Konwersja" ->
                             rightTabPane.getTabs().stream()
                                 .filter(tab -> "Konwersja".equals(tab.getText()))
+                                .findFirst()
+                                .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
+                        case "Zadanie 3" ->
+                            rightTabPane.getTabs().stream()
+                                .filter(tab -> "Zadanie 3".equals(tab.getText()))
                                 .findFirst()
                                 .ifPresent(tab -> rightTabPane.getSelectionModel().select(tab));
                     }
@@ -337,10 +410,10 @@ public class MainController implements Initializable {
         try {
             SignalData loaded = signalManager.loadSignalBinary(file.getAbsolutePath());
             currentSignalData = loaded;
-            signalManager.addLoadedSignal(loaded);
+//            signalManager.addLoadedSignal(loaded);
             refreshLoadedSignalsList();
             loadedSignalsListView.getSelectionModel().select(loaded.getName());
-            Helper.showInfo("Sukces", "Sygnał wczytano z pliku binarnego.");
+//            Helper.showInfo("Sukces", "Sygnał wczytano z pliku binarnego.");
         } catch (SignalFileException e) {
             Helper.showError("Błąd pliku", e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -471,10 +544,15 @@ public class MainController implements Initializable {
         loadedSignalsListView.getItems().setAll(names);
         refreshOperationSignalSelectors(names);
         updateConversionSignalComboBox(names);
+        updateTask3SignalComboBoxes(names);
     }
 
     private void updateConversionSignalComboBox(List<String> names) {
         conversionController.updateInputSignalComboBox(names);
+    }
+
+    private void updateTask3SignalComboBoxes(List<String> names) {
+        task3Controller.updateSignalComboBoxes(names);
     }
 
     private void refreshOperationSignalSelectors(List<String> names) {

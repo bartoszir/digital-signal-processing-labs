@@ -28,6 +28,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.ScrollPane?>
 <VBox prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dsp.app.view.controller.MainController">
   <children>
     <SplitPane dividerPositions="0.3" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -356,6 +357,140 @@
                           </content>
                       </Tab>
 
+                      <Tab text="Zadanie 3">
+                          <content>
+                              <VBox spacing="0" VBox.vgrow="ALWAYS">
+                                  <TabPane fx:id="task3LeftSubTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                                      <tabs>
+
+                                          <Tab text="Splot">
+                                              <content>
+                                                  <VBox spacing="10">
+                                                      <padding><Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/></padding>
+                                                      <children>
+                                                          <Label text="Splot dyskretny" style="-fx-font-weight: bold;"/>
+                                                          <Label text="Sygnał h:"/>
+                                                          <ComboBox fx:id="task3SplotHComboBox" prefWidth="260.0"/>
+                                                          <Label text="Sygnał x:"/>
+                                                          <ComboBox fx:id="task3SplotXComboBox" prefWidth="260.0"/>
+                                                          <HBox alignment="CENTER">
+                                                              <VBox.margin><Insets top="10.0"/></VBox.margin>
+                                                              <Button fx:id="task3SplotCalculateButton" text="Oblicz splot"/>
+                                                          </HBox>
+                                                      </children>
+                                                  </VBox>
+                                              </content>
+                                          </Tab>
+
+                                          <Tab text="Filtracja FIR">
+                                              <content>
+                                                  <VBox spacing="10">
+                                                      <padding><Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/></padding>
+                                                      <children>
+                                                          <Label text="Parametry filtru FIR" style="-fx-font-weight: bold;"/>
+                                                          <GridPane hgap="10" vgap="8">
+                                                              <children>
+                                                                  <Label text="Rząd filtru (M):" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                                                  <TextField fx:id="task3FirMField" text="63" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                                                  <Label text="Param. częst. (K):" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                                                  <TextField fx:id="task3FirKField" text="8" prefWidth="120.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                                                  <Label text="Okno:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                                                  <ComboBox fx:id="task3FirWindowComboBox" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                                                  <Label text="Typ filtru:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                                                  <ComboBox fx:id="task3FirFilterTypeComboBox" prefWidth="160.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                                              </children>
+                                                              <columnConstraints>
+                                                                  <ColumnConstraints minWidth="140.0" prefWidth="140.0"/>
+                                                                  <ColumnConstraints minWidth="120.0" prefWidth="120.0"/>
+                                                              </columnConstraints>
+                                                              <rowConstraints>
+                                                                  <RowConstraints/><RowConstraints/><RowConstraints/><RowConstraints/>
+                                                              </rowConstraints>
+                                                          </GridPane>
+                                                          <Separator/>
+                                                          <Label text="Sygnał wejściowy:"/>
+                                                          <ComboBox fx:id="task3FirSignalComboBox" prefWidth="260.0"/>
+                                                          <HBox alignment="CENTER">
+                                                              <VBox.margin><Insets top="10.0"/></VBox.margin>
+                                                              <Button fx:id="task3FirApplyButton" text="Zastosuj filtr"/>
+                                                          </HBox>
+                                                      </children>
+                                                  </VBox>
+                                              </content>
+                                          </Tab>
+
+                                          <Tab text="Korelacja">
+                                              <content>
+                                                  <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                                                      <content>
+                                                          <VBox spacing="10">
+                                                              <padding><Insets top="10.0" left="10.0" bottom="10.0" right="10.0"/></padding>
+                                                              <children>
+                                                                  <Label text="Korelacja wzajemna" style="-fx-font-weight: bold;"/>
+                                                                  <Label text="Sygnał h:"/>
+                                                                  <ComboBox fx:id="task3CorrHComboBox" prefWidth="260.0"/>
+                                                                  <Label text="Sygnał x:"/>
+                                                                  <ComboBox fx:id="task3CorrXComboBox" prefWidth="260.0"/>
+                                                                  <Label text="Metoda:"/>
+                                                                  <ComboBox fx:id="task3CorrMethodComboBox" prefWidth="260.0"/>
+                                                                  <HBox alignment="CENTER">
+                                                                      <VBox.margin><Insets top="5.0"/></VBox.margin>
+                                                                      <Button fx:id="task3CorrCalculateButton" text="Oblicz korelację"/>
+                                                                  </HBox>
+
+                                                                  <Separator>
+                                                                      <VBox.margin><Insets top="5.0" bottom="5.0"/></VBox.margin>
+                                                                  </Separator>
+
+                                                                  <Label text="Symulacja czujnika odległości" style="-fx-font-weight: bold;"/>
+                                                                  <GridPane hgap="10" vgap="8">
+                                                                      <children>
+                                                                          <Label text="Prędkość sygnału (V):" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                                                          <TextField fx:id="task3SimSignalSpeedField" text="1000.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                                                          <Label text="Prędkość obiektu:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                                                          <TextField fx:id="task3SimObjectSpeedField" text="5.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                                                          <Label text="Odległość początkowa:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                                                          <TextField fx:id="task3SimInitialDistanceField" text="10.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                                                          <Label text="Częst. próbkowania:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                                                          <TextField fx:id="task3SimSamplingFreqField" text="500.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                                                          <Label text="Rozmiar bufora:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                                                          <TextField fx:id="task3SimBufferSizeField" text="256" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                                                          <Label text="Okres raportowania:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                                                          <TextField fx:id="task3SimReportingPeriodField" text="1.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                                                          <Label text="Częst. składowej f1:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                                                          <TextField fx:id="task3SimF1Field" text="5.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                                                          <Label text="Częst. składowej f2:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                                                          <TextField fx:id="task3SimF2Field" text="12.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                                                          <Label text="Liczba kroków:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                                                          <TextField fx:id="task3SimStepsField" text="10" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                                                      </children>
+                                                                      <columnConstraints>
+                                                                          <ColumnConstraints minWidth="150.0" prefWidth="150.0"/>
+                                                                          <ColumnConstraints minWidth="100.0" prefWidth="100.0"/>
+                                                                      </columnConstraints>
+                                                                      <rowConstraints>
+                                                                          <RowConstraints/><RowConstraints/><RowConstraints/>
+                                                                          <RowConstraints/><RowConstraints/><RowConstraints/>
+                                                                          <RowConstraints/><RowConstraints/><RowConstraints/>
+                                                                      </rowConstraints>
+                                                                  </GridPane>
+                                                                  <HBox alignment="CENTER">
+                                                                      <VBox.margin><Insets top="10.0"/></VBox.margin>
+                                                                      <Button fx:id="task3SimulateButton" text="Symuluj"/>
+                                                                  </HBox>
+                                                              </children>
+                                                          </VBox>
+                                                      </content>
+                                                  </ScrollPane>
+                                              </content>
+                                          </Tab>
+
+                                      </tabs>
+                                  </TabPane>
+                              </VBox>
+                          </content>
+                      </Tab>
+
                   </tabs>
                 </TabPane>
              </children>
@@ -521,6 +656,92 @@
                             </GridPane>
                           </children>
                         </VBox>
+                      </children>
+                    </AnchorPane>
+                  </content>
+                </Tab>
+
+                <Tab text="Zadanie 3">
+                  <content>
+                    <AnchorPane>
+                      <children>
+                        <TabPane fx:id="task3RightSubTabPane" tabClosingPolicy="UNAVAILABLE"
+                                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+
+                            <Tab text="Splot">
+                              <content>
+                                <AnchorPane>
+                                  <children>
+                                    <LineChart fx:id="task3SplotChart" animated="false" createSymbols="false"
+                                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                               AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                      <xAxis><NumberAxis label="czas [s]" side="BOTTOM"/></xAxis>
+                                      <yAxis><NumberAxis label="amplituda" side="LEFT"/></yAxis>
+                                    </LineChart>
+                                  </children>
+                                </AnchorPane>
+                              </content>
+                            </Tab>
+
+                            <Tab text="Filtracja FIR">
+                              <content>
+                                <AnchorPane>
+                                  <children>
+                                    <VBox spacing="0"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                      <children>
+                                        <LineChart fx:id="task3FirImpulseChart" animated="false" createSymbols="true"
+                                                   VBox.vgrow="ALWAYS">
+                                          <xAxis><NumberAxis label="n" side="BOTTOM"/></xAxis>
+                                          <yAxis><NumberAxis label="h(n)" side="LEFT"/></yAxis>
+                                        </LineChart>
+                                        <LineChart fx:id="task3FirFilteredChart" animated="false" createSymbols="false"
+                                                   VBox.vgrow="ALWAYS">
+                                          <xAxis><NumberAxis label="czas [s]" side="BOTTOM"/></xAxis>
+                                          <yAxis><NumberAxis label="amplituda" side="LEFT"/></yAxis>
+                                        </LineChart>
+                                      </children>
+                                    </VBox>
+                                  </children>
+                                </AnchorPane>
+                              </content>
+                            </Tab>
+
+                            <Tab text="Korelacja">
+                              <content>
+                                <AnchorPane>
+                                  <children>
+                                    <VBox spacing="0"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                          AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                                      <children>
+                                        <LineChart fx:id="task3CorrResultChart" animated="false" createSymbols="false"
+                                                   VBox.vgrow="ALWAYS">
+                                          <xAxis><NumberAxis label="czas [s]" side="BOTTOM"/></xAxis>
+                                          <yAxis><NumberAxis label="Rhx" side="LEFT"/></yAxis>
+                                        </LineChart>
+                                        <LineChart fx:id="task3CorrSignalsChart" animated="false" createSymbols="false"
+                                                   VBox.vgrow="ALWAYS">
+                                          <xAxis><NumberAxis label="czas [s]" side="BOTTOM"/></xAxis>
+                                          <yAxis><NumberAxis label="amplituda" side="LEFT"/></yAxis>
+                                        </LineChart>
+                                        <LineChart fx:id="task3SimResultChart" animated="false" createSymbols="true"
+                                                   VBox.vgrow="ALWAYS">
+                                          <xAxis><NumberAxis label="krok" side="BOTTOM"/></xAxis>
+                                          <yAxis><NumberAxis label="odległość [m]" side="LEFT"/></yAxis>
+                                        </LineChart>
+                                      </children>
+                                    </VBox>
+                                  </children>
+                                </AnchorPane>
+                              </content>
+                            </Tab>
+
+                          </tabs>
+                        </TabPane>
                       </children>
                     </AnchorPane>
                   </content>

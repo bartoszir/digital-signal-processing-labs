@@ -2,6 +2,7 @@ package dsp.task3.logic.convolution;
 
 import dsp.common.model.Sample;
 import dsp.common.model.SignalData;
+import dsp.task3.logic.filter.FirFilterDesigner;
 
 import java.util.ArrayList;
 import java.util.List;
