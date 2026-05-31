@@ -56,6 +56,14 @@ public final class Correlation {
     }
 
     /**
+     * Metoda wykorzystywana w DistanceSensorSimulator.simulate(), bo oś czasu tam nie jest potrzebna dopiero do
+     * rysowania wykresu
+     */
+    public static List<Double> correlate(List<Double> h, List<Double> x) {
+        return correlateValues(h, x);
+    }
+
+    /**
      * Prywatna implementacja korelacji operująca na czystych wartościach.
      * Pętla zewnętrzna: n od -(N-1) do M-1
      * Pętla wewnętrzna: k od 0 do M-1, warunek: 0 <= k-n < N
